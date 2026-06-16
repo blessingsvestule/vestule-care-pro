@@ -195,6 +195,12 @@ async function init(){
     return;
   }
 
+  // Check if a specific baby was passed via URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const babyId = urlParams.get('babyId');
+
+  let autoSelected = null;
+
   babies.forEach(baby=>{
     const dob=new Date(baby.dob+'T00:00:00');
     const icon=baby.gender==='girl'?'👧':baby.gender==='boy'?'👦':'👶';
@@ -204,7 +210,16 @@ async function init(){
     btn.innerHTML=`<span class="baby-icon">${icon}</span><div><div class="baby-name">${displayName}</div><div class="baby-dob">Born ${fmt(dob)}</div></div><span class="check-icon">✓</span>`;
     btn.addEventListener('click',()=>selectBaby(baby,btn));
     list.appendChild(btn);
+    if(babyId && baby.id === babyId) autoSelected = {baby, btn};
   });
+
+  // Auto-select if baby ID was passed
+  if(autoSelected){
+    setTimeout(()=>{
+      selectBaby(autoSelected.baby, autoSelected.btn);
+      document.getElementById('previewCard').scrollIntoView({behavior:'smooth'});
+    }, 300);
+  }
 }
 
 function selectBaby(baby,btn){
