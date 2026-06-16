@@ -228,7 +228,7 @@ input[readonly]:focus{border-color:var(--border);box-shadow:none;background:#F0F
       <div class="tile-label">PDF Tracker</div>
       <div class="tile-sub">Personalised download</div>
     </div>
-    <div class="bundle-tile" onclick="window.open('VACCINE_GUIDE_LINK','_blank')">
+    <div class="bundle-tile" onclick="window.open('https://blessingsvestule.github.io/mamashield-pro/vaccine_guide.html','_blank')">
       <div class="tile-icon">📖</div>
       <div class="tile-label">Vaccine Guide</div>
       <div class="tile-sub">NPHCDA sourced</div>
@@ -526,8 +526,13 @@ async function showBabySelector(action){
     btn.innerHTML=`<span class="modal-baby-icon">${icon}</span><div><div class="modal-baby-name">${baby.babyName}</div><div class="modal-baby-dob">Born ${fmt(dob)}</div></div>`;
     btn.addEventListener('click',async()=>{
       closeBabySelector();
-      await openBaby(baby.id);
-      if(selectorAction==='calendar') setTimeout(()=>document.getElementById('calList').scrollIntoView({behavior:'smooth'}),400);
+      if(selectorAction==='pdf'){
+        // Navigate to PDF generator with baby ID
+        window.location.href = `./pdf_generator.html?babyId=${baby.id}`;
+      } else {
+        await openBaby(baby.id);
+        if(selectorAction==='calendar') setTimeout(()=>document.getElementById('calList').scrollIntoView({behavior:'smooth'}),400);
+      }
     });
     cont.appendChild(btn);
   });
