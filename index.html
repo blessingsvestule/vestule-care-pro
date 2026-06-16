@@ -29,11 +29,24 @@
 }
 body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--dark);min-height:100vh}
 
-/* ── SCREENS ── */
 .screen{display:none;max-width:520px;margin:0 auto;padding:1.5rem 1rem 3rem}
 .screen.active{display:block}
 #trackerScreen{display:none;max-width:560px;margin:0 auto;padding:0 0 3rem}
 #trackerScreen.active{display:block}
+
+/* ── BABY SELECTOR MODAL ── */
+#babySelectorModal{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.5);align-items:flex-end;justify-content:center}
+#babySelectorModal.open{display:flex}
+.modal-sheet{background:#fff;border-radius:20px 20px 0 0;padding:1.5rem;width:100%;max-width:520px;max-height:80vh;overflow-y:auto}
+.modal-title{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--teal);margin-bottom:.25rem}
+.modal-sub{font-size:13px;color:var(--soft);margin-bottom:1.25rem;line-height:1.5}
+.modal-babies{display:flex;flex-direction:column;gap:8px;margin-bottom:1rem}
+.modal-baby-btn{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--teal-pale);border:1.5px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;width:100%;text-align:left}
+.modal-baby-btn:hover{border-color:var(--teal);background:#fff}
+.modal-baby-icon{font-size:1.4rem;flex-shrink:0}
+.modal-baby-name{font-size:14px;font-weight:600;color:var(--dark)}
+.modal-baby-dob{font-size:12px;color:var(--soft);margin-top:2px}
+.modal-close{width:100%;padding:12px;background:var(--teal-pale);border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;color:var(--mid)}
 
 /* ── COMMON ── */
 .hero{background:linear-gradient(135deg,#1A6B6B,#0D4040);border-radius:20px;padding:1.75rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
@@ -70,25 +83,16 @@ input[readonly]:focus{border-color:var(--border);box-shadow:none;background:#F0F
 .btn-outline:hover{background:var(--teal-pale)}
 .btn-danger{background:var(--missed-bg);color:var(--missed);border:1px solid var(--missed-border)}
 .btn-sm{padding:8px;font-size:13px}
-
 .notebox{background:var(--teal-light);border-left:3px solid var(--teal2);border-radius:0 10px 10px 0;padding:10px 14px;font-size:12px;color:var(--mid);line-height:1.55;margin-bottom:1rem}
 
-/* ── HOME SCREEN ── */
+/* ── HOME ── */
 .bundle-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.25rem}
 .bundle-tile{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:1rem;text-align:center;cursor:pointer;transition:all .2s}
 .bundle-tile:hover{border-color:var(--teal);transform:translateY(-1px)}
-.bundle-tile.active-tile{border-color:var(--given-border)}
-.bundle-tile.cal-tile{border-color:var(--soon-border)}
 .tile-icon{font-size:1.5rem;margin-bottom:4px}
-.tile-label{font-size:12px;font-weight:700}
+.tile-label{font-size:12px;font-weight:700;color:var(--teal)}
 .tile-sub{font-size:11px;color:var(--soft);margin-top:2px}
-.active-tile .tile-label{color:var(--given)}
-.cal-tile .tile-label{color:var(--soon)}
-.teal-tile .tile-label{color:var(--teal)}
-
 .section-label{font-size:11px;font-weight:700;color:var(--soft);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
-
-/* Baby cards */
 .babies-list{display:flex;flex-direction:column;gap:8px;margin-bottom:1rem}
 .baby-card{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:1rem 1.25rem;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(26,107,107,.05)}
 .baby-card:hover{border-color:var(--teal);box-shadow:0 4px 16px rgba(26,107,107,.12);transform:translateY(-1px)}
@@ -104,7 +108,7 @@ input[readonly]:focus{border-color:var(--border);box-shadow:none;background:#F0F
 .bstat.given{background:var(--given-bg);color:var(--given)}
 .bstat.missed{background:var(--missed-bg);color:var(--missed)}
 .bstat.soon{background:var(--soon-bg);color:var(--soon)}
-.baby-arrow{color:var(--soft);font-size:1.4rem;flex-shrink:0;font-weight:300}
+.baby-arrow{color:var(--soft);font-size:1.4rem;flex-shrink:0}
 
 /* ── TRACKER ── */
 .t-header{padding:1rem;position:sticky;top:0;z-index:100}
@@ -118,12 +122,10 @@ input[readonly]:focus{border-color:var(--border);box-shadow:none;background:#F0F
 .t-prog-num{font-size:11px;color:rgba(255,255,255,.7);text-align:right}
 .t-prog-bar{width:70px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;overflow:hidden;margin-top:4px;margin-left:auto}
 .t-prog-fill{height:100%;background:#A8D8D8;border-radius:2px;transition:width .5s ease}
-
 .legend{background:#fff;border-bottom:1px solid var(--border);padding:.6rem 1rem}
 .legend-inner{max-width:560px;margin:0 auto;display:flex;gap:12px;flex-wrap:wrap}
 .leg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--mid);font-weight:500}
 .leg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
-
 .t-body{max-width:560px;margin:0 auto;padding:1rem}
 .age-group{margin-bottom:1.25rem}
 .age-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
@@ -131,13 +133,11 @@ input[readonly]:focus{border-color:var(--border);box-shadow:none;background:#F0F
 .age-pill.girl{background:var(--pink)}
 .age-pill.boy{background:var(--blue)}
 .age-pill.neutral{background:var(--teal)}
-
 .vcard{display:flex;align-items:center;gap:12px;border:1.5px solid var(--future-border);border-radius:14px;padding:12px 14px;margin-bottom:7px;background:var(--future-bg);transition:all .3s}
 .vcard.given{border-color:var(--given-border);background:var(--given-bg)}
 .vcard.missed{border-color:var(--missed-border);background:var(--missed-bg);animation:pulse 2.5s ease infinite}
 .vcard.soon{border-color:var(--soon-border);background:var(--soon-bg)}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,.1)}50%{box-shadow:0 0 0 5px rgba(192,57,43,.06)}}
-
 .give-btn{width:44px;height:44px;border-radius:50%;border:2px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer;flex-shrink:0;transition:all .25s;box-shadow:0 2px 8px rgba(0,0,0,.06)}
 .give-btn:hover{border-color:var(--given);background:var(--given-bg);transform:scale(1.06)}
 .vcard.given .give-btn{background:var(--given);border-color:var(--given);box-shadow:0 3px 12px rgba(30,122,80,.3)}
@@ -154,9 +154,7 @@ input[readonly]:focus{border-color:var(--border);box-shadow:none;background:#F0F
 .hosp-wrap{max-height:0;overflow:hidden;transition:max-height .3s ease,margin .3s}
 .hosp-wrap.open{max-height:60px;margin-top:8px}
 .hosp-input{width:100%;padding:8px 11px;border:1.5px solid var(--given-border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--dark);background:#fff;outline:none}
-
 .hpv-note{background:var(--pink-bg);border:1px solid var(--pink-border);border-radius:10px;padding:8px 12px;margin-top:6px;font-size:11px;color:var(--pink);font-weight:500}
-
 .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:560px;margin:0 auto;padding:1rem}
 .sum{text-align:center;padding:10px 6px;border-radius:12px}
 .sum.given{background:var(--given-bg)}
@@ -168,12 +166,12 @@ input[readonly]:focus{border-color:var(--border);box-shadow:none;background:#F0F
 .sum.upcoming .sum-n{color:var(--teal)}
 .sum-l{font-size:11px;font-weight:600;color:var(--soft);margin-top:2px}
 
-/* Calendar section */
+/* ── CALENDAR ── */
 .cal-section{max-width:560px;margin:0 auto;padding:0 1rem 1rem}
 .cal-card{background:var(--gold-light);border:1.5px solid var(--soon-border);border-radius:20px;padding:1.5rem;margin-bottom:1rem}
 .cal-title{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--gold);margin-bottom:.25rem}
 .cal-sub{font-size:12px;color:var(--mid);margin-bottom:1rem;line-height:1.55}
-.cal-list{display:flex;flex-direction:column;gap:7px;margin-bottom:1rem}
+.cal-list{display:flex;flex-direction:column;gap:7px;margin-bottom:.5rem}
 .cal-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:10px}
 .cal-row.given-row{background:#F4F4F2;border-color:#E0E0DC;opacity:.6}
 .cal-age{font-size:10px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.06em}
@@ -181,25 +179,29 @@ input[readonly]:focus{border-color:var(--border);box-shadow:none;background:#F0F
 .cal-date{font-size:13px;font-weight:600;color:var(--dark)}
 .cal-row.given-row .cal-date{color:var(--soft);text-decoration:line-through}
 .cal-btn{background:var(--teal);color:#fff;border:none;border-radius:8px;padding:7px 12px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-block;transition:background .2s}
-.cal-btn:hover{background:#155858}
 .cal-btn.added{background:var(--given)}
 .cal-given-badge{background:var(--given-bg);color:var(--given);border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;white-space:nowrap}
-.cal-section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin:10px 0 6px;padding-top:6px;border-top:1px solid var(--border)}
-.cal-section-label.upcoming{color:var(--teal)}
-.cal-section-label.given-label{color:var(--soft)}
-
-.sound-guide{background:#fff;border:1px solid var(--soon-border);border-radius:12px;padding:1rem}
-.sound-title{font-size:12px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
-.sound-text{font-size:12px;color:var(--mid);line-height:1.6;margin-bottom:6px}
-.sound-text:last-child{margin-bottom:0}
+.cal-slabel{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin:10px 0 6px;padding-top:6px;border-top:1px solid var(--border)}
+.cal-slabel.up{color:var(--teal)}
+.cal-slabel.gv{color:var(--soft)}
+.cal-tip{font-size:11px;color:var(--mid);line-height:1.5;background:#fff;border-radius:8px;padding:8px 10px;margin-top:8px}
 
 .disclaimer{background:#f9f9f7;border:1px solid var(--border);border-radius:12px;padding:.75rem 1rem;margin:0 1rem 1rem;font-size:11px;color:var(--soft);line-height:1.6;text-align:center;max-width:560px;margin-left:auto;margin-right:auto}
 .t-footer{text-align:center;font-size:11px;color:var(--soft);padding:.5rem 1rem 1rem;line-height:1.7}
-
-@media(max-width:440px){.field-row{grid-template-columns:1fr}.legend-inner{gap:8px}.bundle-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:440px){.field-row{grid-template-columns:1fr}.legend-inner{gap:8px}}
 </style>
 </head>
 <body>
+
+<!-- ══ BABY SELECTOR MODAL ══ -->
+<div id="babySelectorModal" onclick="if(event.target===this)closeBabySelector()">
+  <div class="modal-sheet">
+    <p class="modal-title" id="modalTitle">Which baby?</p>
+    <p class="modal-sub" id="modalSub">Select the baby you want to add calendar reminders for</p>
+    <div class="modal-babies" id="modalBabies"></div>
+    <button class="modal-close" onclick="closeBabySelector()">Cancel</button>
+  </div>
+</div>
 
 <!-- ══ HOME SCREEN ══ -->
 <div id="homeScreen" class="screen active">
@@ -207,42 +209,35 @@ input[readonly]:focus{border-color:var(--border);box-shadow:none;background:#F0F
     <p class="brand">MamaShield Pro · Blessing's Vestule</p>
     <div class="badge">✨ FULL BUNDLE</div>
     <h1 id="homeTitle">My Babies</h1>
-    <p>Your complete MamaShield bundle</p>
+    <p>Your complete MamaShield bundle — all in one place</p>
   </div>
 
-  <!-- Bundle tiles -->
   <div class="bundle-grid">
-    <div class="bundle-tile active-tile" onclick="document.getElementById('babiesSection').scrollIntoView({behavior:'smooth'})">
+    <div class="bundle-tile" style="border-color:var(--given-border)" onclick="document.getElementById('babiesSection').scrollIntoView({behavior:'smooth'})">
       <div class="tile-icon">👶</div>
-      <div class="tile-label">Baby Trackers</div>
+      <div class="tile-label" style="color:var(--given)">Baby Trackers</div>
       <div class="tile-sub">Unlimited babies</div>
     </div>
-    <div class="bundle-tile cal-tile" onclick="openFirstBabyCalendar()">
+    <div class="bundle-tile" style="border-color:var(--soon-border)" onclick="showBabySelector('calendar')">
       <div class="tile-icon">📅</div>
-      <div class="tile-label">Calendar Reminders</div>
-      <div class="tile-sub">Sound alerts</div>
+      <div class="tile-label" style="color:var(--soon)">Calendar Reminders</div>
+      <div class="tile-sub">Select a baby</div>
     </div>
-    <div class="bundle-tile teal-tile" onclick="window.open('PDF_TRACKER_LINK','_blank')">
+    <div class="bundle-tile" onclick="showBabySelector('pdf')">
       <div class="tile-icon">📋</div>
       <div class="tile-label">PDF Tracker</div>
-      <div class="tile-sub">Download & print</div>
+      <div class="tile-sub">Personalised download</div>
     </div>
-    <div class="bundle-tile teal-tile" onclick="window.open('VACCINE_GUIDE_LINK','_blank')">
+    <div class="bundle-tile" onclick="window.open('VACCINE_GUIDE_LINK','_blank')">
       <div class="tile-icon">📖</div>
       <div class="tile-label">Vaccine Guide</div>
-      <div class="tile-sub">Missed vaccine guide</div>
+      <div class="tile-sub">NPHCDA sourced</div>
     </div>
   </div>
 
   <div id="babiesSection">
     <p class="section-label">My Babies</p>
-    <div class="babies-list" id="babiesList">
-      <div style="text-align:center;padding:2rem 1rem;color:var(--soft)">
-        <div style="font-size:3rem;margin-bottom:1rem">👶</div>
-        <p style="font-size:14px;font-weight:600;color:var(--mid);margin-bottom:.5rem">No babies added yet</p>
-        <p style="font-size:13px">Tap the button below to add your first baby</p>
-      </div>
-    </div>
+    <div class="babies-list" id="babiesList"></div>
     <button class="btn btn-teal" onclick="showSetup()">+ Add Baby</button>
     <button class="btn btn-danger btn-sm" onclick="clearAllData()">🗑️ Clear all data and start fresh</button>
   </div>
@@ -258,7 +253,6 @@ input[readonly]:focus{border-color:var(--border);box-shadow:none;background:#F0F
   <div class="card">
     <p class="card-title" id="setupCardTitle">Baby's details</p>
     <p class="card-sub">Every vaccine date calculates automatically from the date of birth.</p>
-
     <div class="field">
       <label>Baby's name</label>
       <input type="text" id="sName" placeholder="e.g. Adaeze, Emeka, Fatima…" maxlength="30"/>
@@ -284,7 +278,7 @@ input[readonly]:focus{border-color:var(--border);box-shadow:none;background:#F0F
       <label>Sex of baby</label>
       <div class="gender-toggle">
         <button class="gender-btn girl" id="btnGirl" onclick="selectGender('girl')">👧 Girl</button>
-        <button class="gender-btn boy" id="btnBoy" onclick="selectGender('boy')">👦 Boy</button>
+        <button class="gender-btn boy"  id="btnBoy"  onclick="selectGender('boy')">👦 Boy</button>
       </div>
     </div>
     <div class="field-row">
@@ -292,7 +286,7 @@ input[readonly]:focus{border-color:var(--border);box-shadow:none;background:#F0F
         <label>Mother's name <span class="opt">(optional)</span></label>
         <div style="position:relative">
           <input type="text" id="sMum" placeholder="Your name" maxlength="30"/>
-          <button id="mumEditBtn" onclick="unlockMumName(event)" style="display:none;position:absolute;right:8px;top:50%;transform:translateY(-50%);background:var(--teal-light);border:none;color:var(--teal);font-size:11px;font-weight:700;cursor:pointer;padding:4px 8px;border-radius:6px">Edit</button>
+          <button id="mumEditBtn" onclick="unlockMum(event)" style="display:none;position:absolute;right:8px;top:50%;transform:translateY(-50%);background:var(--teal-light);border:none;color:var(--teal);font-size:11px;font-weight:700;cursor:pointer;padding:4px 8px;border-radius:6px">Edit</button>
         </div>
         <p id="mumNote" style="display:none;font-size:11px;color:var(--soft);margin-top:4px">Saved from your previous entry</p>
       </div>
@@ -313,7 +307,7 @@ input[readonly]:focus{border-color:var(--border);box-shadow:none;background:#F0F
     <div class="t-header-inner">
       <div>
         <div class="t-name" id="tName"></div>
-        <div class="t-dob" id="tDob"></div>
+        <div class="t-dob"  id="tDob"></div>
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
         <button class="t-back" onclick="goHome()">← All babies</button>
@@ -342,34 +336,26 @@ input[readonly]:focus{border-color:var(--border);box-shadow:none;background:#F0F
     <div class="sum upcoming"><div class="sum-n" id="sPending">0</div><div class="sum-l">Upcoming</div></div>
   </div>
 
-  <!-- Google Calendar section -->
   <div class="cal-section">
     <div class="cal-card">
       <p class="cal-title">📅 Add to Google Calendar</p>
-      <p class="cal-sub">Tap each upcoming appointment to add it to your Google Calendar. Set as <strong>Alarm</strong> for sound alerts.</p>
+      <p class="cal-sub">Tap any upcoming appointment to add it directly to your Google Calendar — reminders are already set for you.</p>
       <div class="cal-list" id="calList"></div>
-      <div class="sound-guide">
-        <p class="sound-title">⚠️ Set sound alerts</p>
-        <p class="sound-text"><strong>Android:</strong> Open the event → Add notification → change to <strong>Alarm</strong> → set 1 week before AND 1 day before → Save. Then Settings → Apps → Google Calendar → Notifications → High Importance.</p>
-        <p class="sound-text"><strong>iPhone:</strong> Open the event → Add alert → 1 week before AND 1 day before → Save. Settings → Sounds → Calendar Alerts → select a ringtone.</p>
-      </div>
+      <div class="cal-tip">💡 After tapping <strong>+ Add to Calendar</strong> — Google Calendar opens with the event and a reminder already configured. Just tap <strong>Save</strong> and your phone will alert you automatically.</div>
     </div>
   </div>
 
   <div class="disclaimer">⚕️ MamaShield is a scheduling tool only — not a medical service. Always confirm vaccine dates with your paediatrician or nearest government health centre. Based on Nigerian NPI 2025–2026 schedule (NPHCDA).</div>
   <div class="t-footer">MamaShield Pro · Blessing's Vestule 🛡️</div>
-
   <div style="max-width:560px;margin:0 auto;padding:0 1rem 2rem;display:flex;flex-direction:column;gap:8px">
-    <button class="btn btn-outline btn-sm" onclick="showSetup(currentBabyId)">✏️ Edit baby's details</button>
+    <button class="btn btn-outline btn-sm" onclick="showSetup(currentId)">✏️ Edit baby's details</button>
     <button class="btn btn-danger btn-sm" onclick="deleteCurrentBaby()">🗑️ Remove this baby</button>
   </div>
 </div>
 
 <script>
-// ════════════════════════════════════════════
-// VACCINE SCHEDULE
-// ════════════════════════════════════════════
-const VAX_BASE = [
+// ════ VACCINE DATA ════
+const VAX_BASE=[
   {age:"At Birth",  days:0,   name:"BCG",                  protects:"Tuberculosis (TB)"},
   {age:"At Birth",  days:0,   name:"OPV0 — Oral Polio",    protects:"Polio"},
   {age:"At Birth",  days:0,   name:"Hepatitis B0",          protects:"Hepatitis B"},
@@ -394,406 +380,306 @@ const VAX_BASE = [
   {age:"12 Months", days:365, name:"Vitamin A — 2nd dose",  protects:"Vision & immune strength (oral drop)"},
   {age:"15 Months", days:456, name:"Measles Booster MCV2",  protects:"Measles — critical booster, do not skip"},
 ];
-const VAX_GIRL = [
-  {age:"9 Years (Girls)", days:3287, name:"HPV Vaccine — Dose 1", protects:"Cervical cancer prevention — girls only", hpv:true},
-  {age:"9 Years (Girls)", days:3377, name:"HPV Vaccine — Dose 2", protects:"Cervical cancer prevention (6 months after dose 1)", hpv:true},
+const VAX_GIRL=[
+  {age:"9 Years (Girls)",days:3287,name:"HPV Vaccine — Dose 1",protects:"Cervical cancer prevention — girls only",hpv:true},
+  {age:"9 Years (Girls)",days:3377,name:"HPV Vaccine — Dose 2",protects:"Cervical cancer prevention (6 months after dose 1)",hpv:true},
 ];
 
-// ════════════════════════════════════════════
-// DATABASE
-// ════════════════════════════════════════════
-const DB_NAME = 'MamaShieldProDB';
-const DB_VER  = 1;
-const STORE   = 'babies';
-let DB = null;
+// ════ DATABASE — same name as free version so data carries over ════
+const DB_NAME='MamaShieldDB', DB_VER=2, STORE='babies';
+let DB=null;
 
-async function openDB() {
-  if (DB) return DB;
-  return new Promise((res, rej) => {
-    const req = indexedDB.open(DB_NAME, DB_VER);
-    req.onupgradeneeded = e => {
-      const db = e.target.result;
-      if (!db.objectStoreNames.contains(STORE)) {
-        db.createObjectStore(STORE, {keyPath: 'id'});
-      }
+async function openDB(){
+  if(DB) return DB;
+  return new Promise((res,rej)=>{
+    const req=indexedDB.open(DB_NAME,DB_VER);
+    req.onupgradeneeded=e=>{
+      const db=e.target.result;
+      if(!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE,{keyPath:'id'});
     };
-    req.onsuccess = e => { DB = e.target.result; res(DB); };
-    req.onerror   = e => rej(e);
+    req.onsuccess=e=>{DB=e.target.result;res(DB);};
+    req.onerror=e=>rej(e);
   });
 }
+async function dbGet(id){const db=await openDB();return new Promise((r,j)=>{const q=db.transaction(STORE,'readonly').objectStore(STORE).get(id);q.onsuccess=e=>r(e.target.result);q.onerror=e=>j(e);});}
+async function dbPut(o){const db=await openDB();return new Promise((r,j)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put(o);tx.oncomplete=()=>r();tx.onerror=e=>j(e);});}
+async function dbDelete(id){const db=await openDB();return new Promise((r,j)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).delete(id);tx.oncomplete=()=>r();tx.onerror=e=>j(e);});}
+async function dbGetAll(){const db=await openDB();return new Promise((r,j)=>{const q=db.transaction(STORE,'readonly').objectStore(STORE).getAll();q.onsuccess=e=>r(e.target.result||[]);q.onerror=e=>j(e);});}
+async function dbClear(){const db=await openDB();return new Promise((r,j)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).clear();tx.oncomplete=()=>r();tx.onerror=e=>j(e);});}
 
-async function dbGet(id) {
-  const db = await openDB();
-  return new Promise((res, rej) => {
-    const req = db.transaction(STORE,'readonly').objectStore(STORE).get(id);
-    req.onsuccess = e => res(e.target.result);
-    req.onerror   = e => rej(e);
+// ════ HELPERS ════
+const MO=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const addD=(d,n)=>{const r=new Date(d);r.setDate(r.getDate()+n);return r;};
+const fmt=d=>`${d.getDate()} ${MO[d.getMonth()]} ${d.getFullYear()}`;
+const fmtG=d=>`${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+const today=()=>{const t=new Date();t.setHours(0,0,0,0);return t;};
+const daysLeft=due=>Math.round((due-today())/86400000);
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).substr(2,6);
+
+// ════ STATE ════
+let currentId='',currentDOB=null,currentGender='',currentVAX=[],currentGiven=[],currentHosp=[];
+let setupGender='',editingId=null,pendingAction='';
+
+// ════ SCREENS ════
+function showScreen(id){
+  ['homeScreen','setupScreen'].forEach(s=>{
+    document.getElementById(s).classList.remove('active');
   });
-}
-
-async function dbPut(obj) {
-  const db = await openDB();
-  return new Promise((res, rej) => {
-    const tx = db.transaction(STORE,'readwrite');
-    tx.objectStore(STORE).put(obj);
-    tx.oncomplete = () => res();
-    tx.onerror    = e => rej(e);
-  });
-}
-
-async function dbDelete(id) {
-  const db = await openDB();
-  return new Promise((res, rej) => {
-    const tx = db.transaction(STORE,'readwrite');
-    tx.objectStore(STORE).delete(id);
-    tx.oncomplete = () => res();
-    tx.onerror    = e => rej(e);
-  });
-}
-
-async function dbGetAll() {
-  const db = await openDB();
-  return new Promise((res, rej) => {
-    const req = db.transaction(STORE,'readonly').objectStore(STORE).getAll();
-    req.onsuccess = e => res(e.target.result || []);
-    req.onerror   = e => rej(e);
-  });
-}
-
-async function dbClear() {
-  const db = await openDB();
-  return new Promise((res, rej) => {
-    const tx = db.transaction(STORE,'readwrite');
-    tx.objectStore(STORE).clear();
-    tx.oncomplete = () => res();
-    tx.onerror    = e => rej(e);
-  });
-}
-
-// ════════════════════════════════════════════
-// HELPERS
-// ════════════════════════════════════════════
-const MO = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-const addD = (d,n) => { const r=new Date(d); r.setDate(r.getDate()+n); return r; };
-const fmt  = d => `${d.getDate()} ${MO[d.getMonth()]} ${d.getFullYear()}`;
-const fmtG = d => `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
-const today = () => { const t=new Date(); t.setHours(0,0,0,0); return t; };
-const daysLeft = due => Math.round((due - today()) / 86400000);
-const uid = () => Date.now().toString(36) + Math.random().toString(36).substr(2,6);
-
-// ════════════════════════════════════════════
-// CURRENT BABY STATE
-// ════════════════════════════════════════════
-let currentId     = null;
-let currentDOB    = null;
-let currentGender = '';
-let currentVAX    = [];
-let currentGiven  = [];
-let currentHosp   = [];
-let setupGender   = '';
-let editingId     = null;
-
-// ════════════════════════════════════════════
-// SCREEN MANAGEMENT
-// ════════════════════════════════════════════
-function showScreen(id) {
-  document.getElementById('homeScreen').classList.remove('active');
-  document.getElementById('setupScreen').classList.remove('active');
-  document.getElementById('trackerScreen').style.display = 'none';
-
-  if (id === 'tracker') {
-    document.getElementById('trackerScreen').style.display = 'block';
+  document.getElementById('trackerScreen').style.display='none';
+  if(id==='tracker'){
+    document.getElementById('trackerScreen').style.display='block';
   } else {
     document.getElementById(id).classList.add('active');
   }
-  window.scrollTo({top:0, behavior:'smooth'});
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ════════════════════════════════════════════
-// HOME SCREEN
-// ════════════════════════════════════════════
-async function goHome() {
+// ════ HOME ════
+async function goHome(){
   showScreen('homeScreen');
   await renderHome();
 }
 
-async function renderHome() {
-  const all = await dbGetAll();
-  const babies = all.filter(b => b.id !== '__mum__');
-  const list = document.getElementById('babiesList');
-  list.innerHTML = '';
+function getBabies(all){return all.filter(b=>b.id!=='__mum__'&&b.id!=='__consent__');}
 
-  if (babies.length === 0) {
-    list.innerHTML = `<div style="text-align:center;padding:2rem 1rem;color:var(--soft)">
+async function renderHome(){
+  const all=await dbGetAll();
+  const babies=getBabies(all);
+  const list=document.getElementById('babiesList');
+  list.innerHTML='';
+
+  if(babies.length===0){
+    list.innerHTML=`<div style="text-align:center;padding:2rem 1rem;color:var(--soft)">
       <div style="font-size:3rem;margin-bottom:1rem">👶</div>
       <p style="font-size:14px;font-weight:600;color:var(--mid);margin-bottom:.5rem">No babies added yet</p>
-      <p style="font-size:13px">Tap the button below to add your first baby</p>
-    </div>`;
+      <p style="font-size:13px">Tap the button below to add your first baby</p></div>`;
     return;
   }
 
-  // Greeting from first baby's mum name
-  const mumName = babies[0].mumName;
-  const hour = new Date().getHours();
-  const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-  document.getElementById('homeTitle').textContent = mumName ? `${greet}, ${mumName}` : 'My Babies';
+  const mumName=babies[0].mumName;
+  const hr=new Date().getHours();
+  const g=hr<12?'Good morning':hr<17?'Good afternoon':'Good evening';
+  document.getElementById('homeTitle').textContent=mumName?`${g}, ${mumName}`:'My Babies';
 
-  babies.forEach(baby => {
-    const dob = new Date(baby.dob + 'T00:00:00');
-    const vax = [...VAX_BASE, ...(baby.gender==='girl' ? VAX_GIRL : [])];
-    const gv  = baby.givenState || new Array(vax.length).fill(false);
-
-    let givenCt = 0, missedCt = 0, soonCt = 0;
-    vax.forEach((v,i) => {
-      if (gv[i]) { givenCt++; return; }
-      const dl = daysLeft(addD(dob, v.days));
-      if (dl < 0) missedCt++;
-      else if (dl <= 14) soonCt++;
+  babies.forEach(baby=>{
+    const dob=new Date(baby.dob+'T00:00:00');
+    const vax=[...VAX_BASE,...(baby.gender==='girl'?VAX_GIRL:[])];
+    const gv=baby.givenState||new Array(vax.length).fill(false);
+    let gc=0,mc=0,sc=0;
+    vax.forEach((v,i)=>{
+      if(gv[i]){gc++;return;}
+      const dl=daysLeft(addD(dob,v.days));
+      if(dl<0)mc++;else if(dl<=14)sc++;
     });
-
-    const icon = baby.gender==='girl' ? '👧' : baby.gender==='boy' ? '👦' : '👶';
-    const div = document.createElement('div');
-    div.className = 'baby-card';
-    div.innerHTML = `
+    const icon=baby.gender==='girl'?'👧':baby.gender==='boy'?'👦':'👶';
+    const div=document.createElement('div');
+    div.className='baby-card';
+    div.innerHTML=`
       <div class="baby-avatar ${baby.gender||'neutral'}">${icon}</div>
       <div class="baby-info">
         <div class="baby-name">${baby.babyName}</div>
         <div class="baby-dob">Born ${fmt(dob)}</div>
         <div class="baby-stats">
-          <span class="bstat given">✓ ${givenCt} given</span>
-          ${missedCt>0 ? `<span class="bstat missed">⚠️ ${missedCt} missed</span>` : ''}
-          ${soonCt>0   ? `<span class="bstat soon">📅 ${soonCt} soon</span>` : ''}
+          <span class="bstat given">✓ ${gc} given</span>
+          ${mc>0?`<span class="bstat missed">⚠️ ${mc} missed</span>`:''}
+          ${sc>0?`<span class="bstat soon">📅 ${sc} soon</span>`:''}
         </div>
       </div>
       <div class="baby-arrow">›</div>`;
-    div.addEventListener('click', () => openBaby(baby.id));
+    div.addEventListener('click',()=>openBaby(baby.id));
     list.appendChild(div);
   });
 }
 
-async function openFirstBabyCalendar() {
-  const all = await dbGetAll();
-  const babies = all.filter(b => b.id !== '__mum__');
-  if (babies.length === 0) {
-    alert('Please add a baby first.');
+// ════ BABY SELECTOR MODAL ════
+let selectorAction='';
+async function showBabySelector(action){
+  const all=await dbGetAll();
+  const babies=getBabies(all);
+  if(babies.length===0){alert('Please add a baby first.');return;}
+  if(babies.length===1){
+    // Only one baby — go straight to action
+    await openBaby(babies[0].id);
+    if(action==='calendar') setTimeout(()=>document.getElementById('calList').scrollIntoView({behavior:'smooth'}),400);
     return;
   }
-  await openBaby(babies[0].id);
-  setTimeout(() => {
-    document.getElementById('calList').scrollIntoView({behavior:'smooth', block:'start'});
-  }, 500);
+  selectorAction=action;
+  document.getElementById('modalTitle').textContent=action==='calendar'?'Which baby\'s calendar?':'Which baby\'s PDF?';
+  document.getElementById('modalSub').textContent=action==='calendar'?'Select the baby to add Google Calendar reminders for':'Select the baby for a personalised PDF tracker';
+  const cont=document.getElementById('modalBabies');
+  cont.innerHTML='';
+  babies.forEach(baby=>{
+    const dob=new Date(baby.dob+'T00:00:00');
+    const icon=baby.gender==='girl'?'👧':baby.gender==='boy'?'👦':'👶';
+    const btn=document.createElement('button');
+    btn.className='modal-baby-btn';
+    btn.innerHTML=`<span class="modal-baby-icon">${icon}</span><div><div class="modal-baby-name">${baby.babyName}</div><div class="modal-baby-dob">Born ${fmt(dob)}</div></div>`;
+    btn.addEventListener('click',async()=>{
+      closeBabySelector();
+      await openBaby(baby.id);
+      if(selectorAction==='calendar') setTimeout(()=>document.getElementById('calList').scrollIntoView({behavior:'smooth'}),400);
+    });
+    cont.appendChild(btn);
+  });
+  document.getElementById('babySelectorModal').classList.add('open');
 }
+function closeBabySelector(){document.getElementById('babySelectorModal').classList.remove('open');}
 
-// ════════════════════════════════════════════
-// SETUP SCREEN
-// ════════════════════════════════════════════
-async function showSetup(babyId = null) {
-  editingId   = babyId;
-  setupGender = '';
+// ════ SETUP ════
+async function showSetup(babyId=null){
+  editingId=babyId;
+  setupGender='';
+  ['sName','sDob','sClinic'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('sBlood').value='';
+  document.getElementById('sMum').value='';
+  document.getElementById('sMum').readOnly=false;
+  document.getElementById('sMum').style.cssText='';
+  document.getElementById('mumEditBtn').style.display='none';
+  document.getElementById('mumNote').style.display='none';
+  document.getElementById('btnGirl').className='gender-btn girl';
+  document.getElementById('btnBoy').className='gender-btn boy';
 
-  // Reset form
-  document.getElementById('sName').value  = '';
-  document.getElementById('sDob').value   = '';
-  document.getElementById('sBlood').value = '';
-  document.getElementById('sClinic').value = '';
-  document.getElementById('sMum').value   = '';
-  document.getElementById('sMum').readOnly = false;
-  document.getElementById('sMum').style.background = '';
-  document.getElementById('sMum').style.color = '';
-  document.getElementById('mumEditBtn').style.display = 'none';
-  document.getElementById('mumNote').style.display = 'none';
-  document.getElementById('btnGirl').className = 'gender-btn girl';
-  document.getElementById('btnBoy').className  = 'gender-btn boy';
-
-  if (babyId) {
-    // Editing existing baby
-    document.getElementById('setupTitle').innerHTML = "Edit baby's <em>details</em>";
-    document.getElementById('setupCardTitle').textContent = "Edit baby's details";
-    document.getElementById('saveBabyBtn').textContent = "Update Baby's Profile →";
-    const baby = await dbGet(babyId);
-    if (baby) {
-      document.getElementById('sName').value   = baby.babyName || '';
-      document.getElementById('sDob').value    = baby.dob || '';
-      document.getElementById('sBlood').value  = baby.blood || '';
-      document.getElementById('sMum').value    = baby.mumName || '';
-      document.getElementById('sClinic').value = baby.clinic || '';
-      if (baby.gender) selectGender(baby.gender);
+  if(babyId){
+    document.getElementById('setupTitle').innerHTML="Edit baby's <em>details</em>";
+    document.getElementById('setupCardTitle').textContent="Edit baby's details";
+    document.getElementById('saveBabyBtn').textContent="Update Baby's Profile →";
+    const baby=await dbGet(babyId);
+    if(baby){
+      document.getElementById('sName').value=baby.babyName||'';
+      document.getElementById('sDob').value=baby.dob||'';
+      document.getElementById('sBlood').value=baby.blood||'';
+      document.getElementById('sMum').value=baby.mumName||'';
+      document.getElementById('sClinic').value=baby.clinic||'';
+      if(baby.gender) selectGender(baby.gender);
     }
   } else {
-    // New baby — auto-fill mum name if saved
-    document.getElementById('setupTitle').innerHTML = "Add your <em>baby's details</em>";
-    document.getElementById('setupCardTitle').textContent = "Baby's details";
-    document.getElementById('saveBabyBtn').textContent = "Save Baby's Profile →";
-    const mumRecord = await dbGet('__mum__');
-    if (mumRecord && mumRecord.name) {
-      const inp = document.getElementById('sMum');
-      inp.value    = mumRecord.name;
-      inp.readOnly = true;
-      inp.style.background = '#F0F0EC';
-      inp.style.color = 'var(--soft)';
-      document.getElementById('mumEditBtn').style.display = 'block';
-      document.getElementById('mumNote').style.display = 'block';
-    }
+    document.getElementById('setupTitle').innerHTML="Add your <em>baby's details</em>";
+    document.getElementById('setupCardTitle').textContent="Baby's details";
+    document.getElementById('saveBabyBtn').textContent="Save Baby's Profile →";
+    // Auto-fill mum name
+    try{
+      const m=await dbGet('__mum__');
+      if(m&&m.name){
+        const inp=document.getElementById('sMum');
+        inp.value=m.name;
+        inp.readOnly=true;
+        inp.style.background='#F0F0EC';
+        inp.style.color='var(--soft)';
+        document.getElementById('mumEditBtn').style.display='block';
+        document.getElementById('mumNote').style.display='block';
+      }
+    }catch(e){}
   }
   showScreen('setupScreen');
 }
 
-function selectGender(g) {
-  setupGender = g;
-  document.getElementById('btnGirl').className = 'gender-btn girl' + (g==='girl' ? ' sel' : '');
-  document.getElementById('btnBoy').className  = 'gender-btn boy'  + (g==='boy'  ? ' sel' : '');
+function selectGender(g){
+  setupGender=g;
+  document.getElementById('btnGirl').className='gender-btn girl'+(g==='girl'?' sel':'');
+  document.getElementById('btnBoy').className='gender-btn boy'+(g==='boy'?' sel':'');
 }
 
-function unlockMumName(e) {
+function unlockMum(e){
   e.stopPropagation();
-  const inp = document.getElementById('sMum');
-  inp.readOnly = false;
-  inp.style.background = '';
-  inp.style.color = '';
-  inp.focus();
-  document.getElementById('mumEditBtn').style.display = 'none';
-  document.getElementById('mumNote').style.display = 'none';
+  const inp=document.getElementById('sMum');
+  inp.readOnly=false;inp.style.background='';inp.style.color='';inp.focus();
+  document.getElementById('mumEditBtn').style.display='none';
+  document.getElementById('mumNote').style.display='none';
 }
 
-async function saveBaby() {
-  const name = document.getElementById('sName').value.trim();
-  const dob  = document.getElementById('sDob').value;
-  if (!name) { alert("Please enter your baby's name."); return; }
-  if (!dob)  { alert("Please enter your baby's date of birth."); return; }
-  if (!setupGender) { alert("Please select the sex of your baby."); return; }
-
-  const id = editingId || uid();
-  const mumName = document.getElementById('sMum').value.trim();
-
-  // Save mum name globally
-  if (mumName) { await dbPut({id:'__mum__', name:mumName}); }
-
-  // Get existing state if editing
-  let givenState = new Array([...VAX_BASE,...(setupGender==='girl'?VAX_GIRL:[])].length).fill(false);
-  let hospState  = new Array(givenState.length).fill('');
-  if (editingId) {
-    const existing = await dbGet(editingId);
-    if (existing) {
-      givenState = existing.givenState || givenState;
-      hospState  = existing.hospitalState || hospState;
-    }
+async function saveBaby(){
+  const name=document.getElementById('sName').value.trim();
+  const dob=document.getElementById('sDob').value;
+  if(!name){alert("Please enter your baby's name.");return;}
+  if(!dob){alert("Please enter your baby's date of birth.");return;}
+  if(!setupGender){alert("Please select the sex of your baby.");return;}
+  const id=editingId||uid();
+  const mumName=document.getElementById('sMum').value.trim();
+  if(mumName) await dbPut({id:'__mum__',name:mumName});
+  const vax=[...VAX_BASE,...(setupGender==='girl'?VAX_GIRL:[])];
+  let givenState=new Array(vax.length).fill(false);
+  let hospState=new Array(vax.length).fill('');
+  if(editingId){
+    const ex=await dbGet(editingId);
+    if(ex){givenState=ex.givenState||givenState;hospState=ex.hospitalState||hospState;}
   }
-
-  const baby = {
-    id,
-    babyName: name,
-    dob,
-    gender: setupGender,
-    blood:   document.getElementById('sBlood').value,
-    mumName,
-    clinic:  document.getElementById('sClinic').value.trim(),
-    givenState,
-    hospitalState: hospState,
-    createdAt: Date.now(),
-  };
-
+  const baby={id,babyName:name,dob,gender:setupGender,blood:document.getElementById('sBlood').value,mumName,clinic:document.getElementById('sClinic').value.trim(),givenState,hospitalState:hospState,createdAt:Date.now()};
   await dbPut(baby);
-  editingId   = null;
-  setupGender = '';
+  editingId=null;setupGender='';
   await openBaby(id);
 }
 
-// ════════════════════════════════════════════
-// TRACKER
-// ════════════════════════════════════════════
-async function openBaby(id) {
-  const baby = await dbGet(id);
-  if (!baby) { await goHome(); return; }
-
-  currentId     = id;
-  currentDOB    = new Date(baby.dob + 'T00:00:00');
-  currentGender = baby.gender || '';
-  currentVAX    = [...VAX_BASE, ...(currentGender==='girl' ? VAX_GIRL : [])];
-  currentGiven  = baby.givenState    || new Array(currentVAX.length).fill(false);
-  currentHosp   = baby.hospitalState || new Array(currentVAX.length).fill('');
-
-  // Pad arrays to match VAX length
-  while (currentGiven.length < currentVAX.length) currentGiven.push(false);
-  while (currentHosp.length  < currentVAX.length) currentHosp.push('');
-
-  const icon = currentGender==='girl' ? '👧' : currentGender==='boy' ? '👦' : '👶';
-  document.getElementById('tName').innerHTML    = `${icon} ${baby.babyName}`;
-  document.getElementById('tDob').textContent   = `Born ${fmt(currentDOB)}${baby.blood ? ' · ' + baby.blood : ''}`;
-  document.getElementById('tHeader').className  = `t-header ${currentGender||'neutral'}`;
-
+// ════ TRACKER ════
+async function openBaby(id){
+  const baby=await dbGet(id);
+  if(!baby){await goHome();return;}
+  currentId=id;
+  currentDOB=new Date(baby.dob+'T00:00:00');
+  currentGender=baby.gender||'';
+  currentVAX=[...VAX_BASE,...(currentGender==='girl'?VAX_GIRL:[])];
+  currentGiven=baby.givenState||new Array(currentVAX.length).fill(false);
+  currentHosp=baby.hospitalState||new Array(currentVAX.length).fill('');
+  while(currentGiven.length<currentVAX.length)currentGiven.push(false);
+  while(currentHosp.length<currentVAX.length)currentHosp.push('');
+  const icon=currentGender==='girl'?'👧':currentGender==='boy'?'👦':'👶';
+  document.getElementById('tName').innerHTML=`${icon} ${baby.babyName}`;
+  document.getElementById('tDob').textContent=`Born ${fmt(currentDOB)}${baby.blood?' · '+baby.blood:''}`;
+  document.getElementById('tHeader').className=`t-header ${currentGender||'neutral'}`;
   buildCards();
   buildCalendar();
   showScreen('tracker');
 }
 
-function getState(i) {
-  if (currentGiven[i] === true) return 'given';
-  const dl = daysLeft(addD(currentDOB, currentVAX[i].days));
-  if (dl < 0)   return 'missed';
-  if (dl <= 14) return 'soon';
+function getState(i){
+  if(currentGiven[i]===true) return 'given';
+  const dl=daysLeft(addD(currentDOB,currentVAX[i].days));
+  if(dl<0) return 'missed';
+  if(dl<=14) return 'soon';
   return 'future';
 }
 
-function chipHTML(state, dueDate) {
-  const dl = daysLeft(dueDate);
-  if (state==='given')  return `<span class="vstatus given">✓ Given</span>`;
-  if (state==='missed') return `<span class="vstatus missed">⚠️ Overdue — was due ${fmt(dueDate)}</span>`;
-  if (state==='soon')   return dl===0 ? `<span class="vstatus soon">📅 Due TODAY</span>` : `<span class="vstatus soon">📅 Due in ${dl} day${dl>1?'s':''} — ${fmt(dueDate)}</span>`;
-  return `<span class="vstatus future">Due ${fmt(dueDate)}</span>`;
+function chipHTML(state,due){
+  const dl=daysLeft(due);
+  if(state==='given')  return`<span class="vstatus given">✓ Given</span>`;
+  if(state==='missed') return`<span class="vstatus missed">⚠️ Overdue — was due ${fmt(due)}</span>`;
+  if(state==='soon')   return dl===0?`<span class="vstatus soon">📅 Due TODAY</span>`:`<span class="vstatus soon">📅 Due in ${dl} day${dl>1?'s':''} — ${fmt(due)}</span>`;
+  return`<span class="vstatus future">Due ${fmt(due)}</span>`;
 }
 
-function buildCards() {
-  const body = document.getElementById('tBody');
-  body.innerHTML = '';
-  const groups = {};
-  currentVAX.forEach((v,i) => { if (!groups[v.age]) groups[v.age]=[]; groups[v.age].push(i); });
-
-  Object.entries(groups).forEach(([age, idxs]) => {
-    const dueDate  = addD(currentDOB, currentVAX[idxs[0]].days);
-    const allGiven = idxs.every(i => currentGiven[i]);
-    const anyMiss  = idxs.some(i  => getState(i)==='missed');
-    const anySoon  = idxs.some(i  => getState(i)==='soon');
-
-    let ageStatus = '';
-    if (allGiven) ageStatus = `<span style="font-size:11px;font-weight:700;color:var(--given);margin-left:auto">✓ All given</span>`;
-    else if (anyMiss) ageStatus = `<span style="font-size:11px;font-weight:700;color:var(--missed);margin-left:auto">⚠️ Overdue</span>`;
-    else if (anySoon) ageStatus = `<span style="font-size:11px;font-weight:700;color:var(--soon);margin-left:auto">Due soon</span>`;
-
-    const grp = document.createElement('div');
-    grp.className = 'age-group';
-    grp.id = `grp-${age.replace(/[\s()]/g,'-')}`;
-    grp.innerHTML = `<div class="age-header"><span class="age-pill ${currentGender||'neutral'}">${age}</span><span class="age-date" style="font-size:12px;color:var(--soft)">${fmt(dueDate)}</span>${ageStatus}</div>`;
-
-    if (currentVAX[idxs[0]].hpv) {
-      const n = document.createElement('div');
-      n.className = 'hpv-note';
-      n.textContent = '👧 Girls only. Protects against cervical cancer. Confirm with your doctor.';
-      grp.appendChild(n);
-    }
-
-    idxs.forEach(i => {
-      const v = currentVAX[i];
-      const state   = getState(i);
-      const dueDate = addD(currentDOB, v.days);
-      const card = document.createElement('div');
-      card.className = `vcard ${state}`;
-      card.id = `vc${i}`;
-      card.innerHTML = `
-        <button class="give-btn" id="btn${i}" title="Tap when given">${currentGiven[i] ? '✓' : '💉'}</button>
+function buildCards(){
+  const body=document.getElementById('tBody');
+  body.innerHTML='';
+  const groups={};
+  currentVAX.forEach((v,i)=>{if(!groups[v.age])groups[v.age]=[];groups[v.age].push(i);});
+  Object.entries(groups).forEach(([age,idxs])=>{
+    const due=addD(currentDOB,currentVAX[idxs[0]].days);
+    const allGiven=idxs.every(i=>currentGiven[i]);
+    const anyMiss=idxs.some(i=>getState(i)==='missed');
+    const anySoon=idxs.some(i=>getState(i)==='soon');
+    let ageStatus='';
+    if(allGiven) ageStatus=`<span style="font-size:11px;font-weight:700;color:var(--given);margin-left:auto">✓ All given</span>`;
+    else if(anyMiss) ageStatus=`<span style="font-size:11px;font-weight:700;color:var(--missed);margin-left:auto">⚠️ Overdue</span>`;
+    else if(anySoon) ageStatus=`<span style="font-size:11px;font-weight:700;color:var(--soon);margin-left:auto">Due soon</span>`;
+    const grp=document.createElement('div');
+    grp.className='age-group';grp.id=`grp-${age.replace(/[\s()]/g,'-')}`;
+    grp.innerHTML=`<div class="age-header"><span class="age-pill ${currentGender||'neutral'}">${age}</span><span style="font-size:12px;color:var(--soft)">${fmt(due)}</span>${ageStatus}</div>`;
+    if(currentVAX[idxs[0]].hpv){const n=document.createElement('div');n.className='hpv-note';n.textContent='👧 Girls only. Protects against cervical cancer. Confirm with your doctor.';grp.appendChild(n);}
+    idxs.forEach(i=>{
+      const v=currentVAX[i],state=getState(i),due=addD(currentDOB,v.days);
+      const card=document.createElement('div');
+      card.className=`vcard ${state}`;card.id=`vc${i}`;
+      card.innerHTML=`
+        <button class="give-btn" id="btn${i}">${currentGiven[i]?'✓':'💉'}</button>
         <div class="vinfo">
           <div class="vname">${v.name}</div>
           <div class="vprotects">${v.protects}</div>
-          <div id="chip${i}">${chipHTML(state, dueDate)}</div>
-          <div class="hosp-wrap ${currentGiven[i] ? 'open' : ''}" id="hw${i}">
-            <input class="hosp-input" type="text" placeholder="Which clinic gave this? (optional)"
-              value="${currentHosp[i]||''}" id="hi${i}"/>
+          <div id="chip${i}">${chipHTML(state,due)}</div>
+          <div class="hosp-wrap ${currentGiven[i]?'open':''}" id="hw${i}">
+            <input class="hosp-input" type="text" placeholder="Which clinic gave this? (optional)" value="${currentHosp[i]||''}" id="hi${i}"/>
           </div>
         </div>`;
-      card.querySelector('.give-btn').addEventListener('click', () => tapGiven(i));
-      card.querySelector('.hosp-input').addEventListener('change', e => {
-        currentHosp[i] = e.target.value;
-        saveCurrentState();
-      });
+      card.querySelector('.give-btn').addEventListener('click',()=>tapGiven(i));
+      card.querySelector('.hosp-input').addEventListener('change',e=>{currentHosp[i]=e.target.value;saveState();});
       grp.appendChild(card);
     });
     body.appendChild(grp);
@@ -801,191 +687,140 @@ function buildCards() {
   updateSummary();
 }
 
-async function tapGiven(i) {
-  currentGiven[i] = !currentGiven[i];
-  const state   = getState(i);
-  const dueDate = addD(currentDOB, currentVAX[i].days);
-
-  const card = document.getElementById(`vc${i}`);
-  card.className = `vcard ${state}`;
-  document.getElementById(`btn${i}`).textContent = currentGiven[i] ? '✓' : '💉';
-  document.getElementById(`chip${i}`).innerHTML  = chipHTML(state, dueDate);
-  const hw = document.getElementById(`hw${i}`);
-  hw.className = `hosp-wrap ${currentGiven[i] ? 'open' : ''}`;
-  if (currentGiven[i]) setTimeout(() => { const inp=document.getElementById(`hi${i}`); if(inp) inp.focus(); }, 320);
-
-  // Update age group header
-  const age  = currentVAX[i].age;
-  const idxs = currentVAX.map((v,j) => v.age===age ? j : -1).filter(j => j>=0);
-  const allGiven = idxs.every(j => currentGiven[j]);
-  const anyMiss  = idxs.some(j  => getState(j)==='missed');
-  const anySoon  = idxs.some(j  => getState(j)==='soon');
-  const grp = document.getElementById(`grp-${age.replace(/[\s()]/g,'-')}`);
-  if (grp) {
-    const spans = grp.querySelector('.age-header').querySelectorAll('span');
-    const last  = spans[spans.length-1];
-    if (allGiven)      last.outerHTML = `<span style="font-size:11px;font-weight:700;color:var(--given);margin-left:auto">✓ All given</span>`;
-    else if (anyMiss)  last.outerHTML = `<span style="font-size:11px;font-weight:700;color:var(--missed);margin-left:auto">⚠️ Overdue</span>`;
-    else if (anySoon)  last.outerHTML = `<span style="font-size:11px;font-weight:700;color:var(--soon);margin-left:auto">Due soon</span>`;
-    else               last.outerHTML = `<span style="font-size:11px;font-weight:700;color:transparent;margin-left:auto">—</span>`;
+async function tapGiven(i){
+  currentGiven[i]=!currentGiven[i];
+  const state=getState(i),due=addD(currentDOB,currentVAX[i].days);
+  const card=document.getElementById(`vc${i}`);
+  card.className=`vcard ${state}`;
+  document.getElementById(`btn${i}`).textContent=currentGiven[i]?'✓':'💉';
+  document.getElementById(`chip${i}`).innerHTML=chipHTML(state,due);
+  const hw=document.getElementById(`hw${i}`);
+  hw.className=`hosp-wrap ${currentGiven[i]?'open':''}`;
+  if(currentGiven[i]) setTimeout(()=>{const inp=document.getElementById(`hi${i}`);if(inp)inp.focus();},320);
+  const age=currentVAX[i].age;
+  const idxs=currentVAX.map((v,j)=>v.age===age?j:-1).filter(j=>j>=0);
+  const allG=idxs.every(j=>currentGiven[j]),anyM=idxs.some(j=>getState(j)==='missed'),anyS=idxs.some(j=>getState(j)==='soon');
+  const grp=document.getElementById(`grp-${age.replace(/[\s()]/g,'-')}`);
+  if(grp){
+    const spans=grp.querySelector('.age-header').querySelectorAll('span');
+    const last=spans[spans.length-1];
+    if(allG) last.outerHTML=`<span style="font-size:11px;font-weight:700;color:var(--given);margin-left:auto">✓ All given</span>`;
+    else if(anyM) last.outerHTML=`<span style="font-size:11px;font-weight:700;color:var(--missed);margin-left:auto">⚠️ Overdue</span>`;
+    else if(anyS) last.outerHTML=`<span style="font-size:11px;font-weight:700;color:var(--soon);margin-left:auto">Due soon</span>`;
+    else last.outerHTML=`<span style="font-size:11px;font-weight:700;color:transparent;margin-left:auto">—</span>`;
   }
-
   updateSummary();
   buildCalendar();
-  await saveCurrentState();
+  await saveState();
 }
 
-function updateSummary() {
-  const g = currentGiven.filter(Boolean).length;
-  const m = currentVAX.filter((_,i) => getState(i)==='missed').length;
-  const p = currentVAX.filter((_,i) => !currentGiven[i]).length;
-  document.getElementById('sGiven').textContent   = g;
-  document.getElementById('sMissed').textContent  = m;
-  document.getElementById('sPending').textContent = p;
-  document.getElementById('tProgNum').textContent = `${g} / ${currentVAX.length} given`;
-  document.getElementById('tProgFill').style.width = `${Math.round(g/currentVAX.length*100)}%`;
+function updateSummary(){
+  const g=currentGiven.filter(Boolean).length;
+  const m=currentVAX.filter((_,i)=>getState(i)==='missed').length;
+  const p=currentVAX.filter((_,i)=>!currentGiven[i]).length;
+  document.getElementById('sGiven').textContent=g;
+  document.getElementById('sMissed').textContent=m;
+  document.getElementById('sPending').textContent=p;
+  document.getElementById('tProgNum').textContent=`${g} / ${currentVAX.length} given`;
+  document.getElementById('tProgFill').style.width=`${Math.round(g/currentVAX.length*100)}%`;
 }
 
-async function saveCurrentState() {
-  if (!currentId) return;
-  try {
-    const baby = await dbGet(currentId);
-    if (baby) {
-      baby.givenState    = [...currentGiven];
-      baby.hospitalState = [...currentHosp];
-      await dbPut(baby);
-    }
-  } catch(e) { console.log('Save error:', e); }
+async function saveState(){
+  if(!currentId) return;
+  try{
+    const baby=await dbGet(currentId);
+    if(baby){baby.givenState=[...currentGiven];baby.hospitalState=[...currentHosp];await dbPut(baby);}
+  }catch(e){}
 }
 
-// ════════════════════════════════════════════
-// GOOGLE CALENDAR
-// ════════════════════════════════════════════
-function makeGCalURL(babyName, age, dueDate, vaccines) {
-  const start   = fmtG(dueDate);
-  const end     = fmtG(addD(dueDate, 1));
-  const details = `Vaccines: ${vaccines}\n\n⚠️ Set this as an ALARM (not notification) so your phone makes sound.\n\nBring:\n• Baby vaccination card\n• Change of clothes\n\nAll NPI vaccines are FREE at government health centres in Nigeria.\n\nMamaShield Pro · Blessing's Vestule`;
-  const p = new URLSearchParams({
-    action: 'TEMPLATE',
-    text:   `💉 ${babyName} — ${age} Vaccines`,
-    dates:  `${start}/${end}`,
+// ════ GOOGLE CALENDAR — with pre-configured reminder ════
+function makeGCalURL(babyName,age,due,vaccines){
+  const start=fmtG(due),end=fmtG(addD(due,1));
+  // Pre-configure a 7-day reminder in the URL
+  const details=`Vaccines: ${vaccines}\n\nBring:\n• Baby's vaccination card\n• Change of clothes for baby\n\nAll NPI vaccines are FREE at government health centres in Nigeria.\n\nMamaShield Pro · Blessing's Vestule`;
+  const p=new URLSearchParams({
+    action:'TEMPLATE',
+    text:`💉 ${babyName} — ${age} Vaccines`,
+    dates:`${start}/${end}`,
     details,
-    location: 'Your nearest government health centre / PHC',
+    location:'Your nearest government health centre / PHC',
+    // Pre-set a popup reminder at 7 days (10080 minutes)
+    trp:'false',
+    sprop:'name:MamaShield',
   });
-  return `https://calendar.google.com/calendar/render?${p.toString()}`;
+  // Add reminder parameter — Google Calendar accepts this
+  return `https://calendar.google.com/calendar/render?${p.toString()}&add_invitee=&crm=AVAILABLE&remind=10080`;
 }
 
-function buildCalendar() {
-  const list = document.getElementById('calList');
-  if (!list || !currentDOB) return;
-  list.innerHTML = '';
-
-  const babyName = document.getElementById('tName').textContent.replace(/👧|👦|👶/g,'').trim();
-  const groups   = {};
-  currentVAX.forEach((v,i) => { if (!groups[v.age]) groups[v.age]=[]; groups[v.age].push(i); });
-
-  const upcoming = [];
-  const given    = [];
-
-  Object.entries(groups).forEach(([age, idxs]) => {
-    const dueDate  = addD(currentDOB, currentVAX[idxs[0]].days);
-    const allGiven = idxs.every(i => currentGiven[i]);
-    const vaccines = idxs.map(i => currentVAX[i].name).join(', ');
-
-    if (allGiven) {
-      given.push({age, dueDate});
-    } else {
-      upcoming.push({age, dueDate, vaccines});
-    }
+function buildCalendar(){
+  const list=document.getElementById('calList');
+  if(!list||!currentDOB) return;
+  list.innerHTML='';
+  const babyName=document.getElementById('tName').textContent.replace(/👧|👦|👶/g,'').trim();
+  const groups={};
+  currentVAX.forEach((v,i)=>{if(!groups[v.age])groups[v.age]=[];groups[v.age].push(i);});
+  const upcoming=[],given=[];
+  Object.entries(groups).forEach(([age,idxs])=>{
+    const due=addD(currentDOB,currentVAX[idxs[0]].days);
+    const allGiven=idxs.every(i=>currentGiven[i]);
+    const vaccines=idxs.map(i=>currentVAX[i].name).join(', ');
+    if(allGiven) given.push({age,due});
+    else upcoming.push({age,due,vaccines});
   });
 
-  if (upcoming.length > 0) {
-    const lbl = document.createElement('p');
-    lbl.className = 'cal-section-label upcoming';
-    lbl.textContent = 'Upcoming appointments';
+  if(upcoming.length>0){
+    const lbl=document.createElement('p');
+    lbl.className='cal-slabel up';lbl.textContent='Upcoming — tap to add to your calendar';
     list.appendChild(lbl);
-
-    upcoming.forEach(({age, dueDate, vaccines}) => {
-      const url = makeGCalURL(babyName, age, dueDate, vaccines);
-      const row = document.createElement('div');
-      row.className = 'cal-row';
-      row.innerHTML = `
-        <div style="flex:1">
-          <div class="cal-age">${age}</div>
-          <div class="cal-date">${fmt(dueDate)}</div>
-        </div>
-        <a class="cal-btn" href="${url}" target="_blank">+ Add to Calendar</a>`;
-      row.querySelector('.cal-btn').addEventListener('click', function() {
-        setTimeout(() => { this.textContent='✅ Added'; this.classList.add('added'); }, 400);
-      });
+    upcoming.forEach(({age,due,vaccines})=>{
+      const url=makeGCalURL(babyName,age,due,vaccines);
+      const row=document.createElement('div');
+      row.className='cal-row';
+      row.innerHTML=`<div style="flex:1"><div class="cal-age">${age}</div><div class="cal-date">${fmt(due)}</div></div><a class="cal-btn" href="${url}" target="_blank">+ Add to Calendar</a>`;
+      row.querySelector('.cal-btn').addEventListener('click',function(){setTimeout(()=>{this.textContent='✅ Added';this.classList.add('added');},400);});
       list.appendChild(row);
     });
   } else {
-    const done = document.createElement('div');
-    done.style.cssText = 'text-align:center;padding:1rem;font-size:13px;color:var(--given);font-weight:600';
-    done.textContent = '✅ All vaccines have been given!';
+    const done=document.createElement('div');
+    done.style.cssText='text-align:center;padding:1rem;font-size:13px;color:var(--given);font-weight:600';
+    done.textContent='✅ All vaccines have been given!';
     list.appendChild(done);
   }
 
-  if (given.length > 0) {
-    const sep = document.createElement('div');
-    sep.style.cssText = 'height:1px;background:var(--border);margin:10px 0 6px';
-    list.appendChild(sep);
-    const lbl = document.createElement('p');
-    lbl.className = 'cal-section-label given-label';
-    lbl.textContent = 'Already given — no action needed';
-    list.appendChild(lbl);
-    given.forEach(({age, dueDate}) => {
-      const row = document.createElement('div');
-      row.className = 'cal-row given-row';
-      row.innerHTML = `
-        <div style="flex:1">
-          <div class="cal-age">${age}</div>
-          <div class="cal-date">${fmt(dueDate)}</div>
-        </div>
-        <span class="cal-given-badge">✓ Given</span>`;
+  if(given.length>0){
+    const sep=document.createElement('div');sep.style.cssText='height:1px;background:var(--border);margin:10px 0 6px';list.appendChild(sep);
+    const lbl=document.createElement('p');lbl.className='cal-slabel gv';lbl.textContent='Already given — no action needed';list.appendChild(lbl);
+    given.forEach(({age,due})=>{
+      const row=document.createElement('div');
+      row.className='cal-row given-row';
+      row.innerHTML=`<div style="flex:1"><div class="cal-age">${age}</div><div class="cal-date">${fmt(due)}</div></div><span class="cal-given-badge">✓ Given</span>`;
       list.appendChild(row);
     });
   }
 }
 
-// ════════════════════════════════════════════
-// EDIT / DELETE
-// ════════════════════════════════════════════
-async function deleteCurrentBaby() {
-  const baby = await dbGet(currentId);
-  const name = baby ? baby.babyName : 'this baby';
-  if (confirm(`Remove ${name}'s profile? This will permanently erase all their vaccine data.`)) {
-    await dbDelete(currentId);
-    currentId = null;
+// ════ EDIT / DELETE ════
+async function deleteCurrentBaby(){
+  const baby=await dbGet(currentId);
+  const name=baby?baby.babyName:'this baby';
+  if(confirm(`Remove ${name}'s profile? This will permanently erase all their vaccine data.`)){
+    await dbDelete(currentId);currentId='';
     await goHome();
   }
 }
 
-// ════════════════════════════════════════════
-// CLEAR ALL DATA
-// ════════════════════════════════════════════
-async function clearAllData() {
-  if (confirm('This will permanently erase ALL baby profiles and vaccine data. Are you sure?')) {
-    await dbClear();
-    currentId = null;
-    document.getElementById('homeTitle').textContent = 'My Babies';
+// ════ CLEAR ALL ════
+async function clearAllData(){
+  if(confirm('This will permanently erase ALL baby profiles and vaccine data. Are you sure?')){
+    await dbClear();currentId='';
+    document.getElementById('homeTitle').textContent='My Babies';
     await goHome();
-    alert('All data cleared.');
   }
 }
 
-// ════════════════════════════════════════════
-// INIT
-// ════════════════════════════════════════════
-document.getElementById('sDob').max = new Date().toISOString().split('T')[0];
-
-async function init() {
-  await openDB();
-  await goHome();
-}
-
-init();
+// ════ INIT ════
+document.getElementById('sDob').max=new Date().toISOString().split('T')[0];
+openDB().then(()=>goHome());
 </script>
 </body>
 </html>
