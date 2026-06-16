@@ -350,8 +350,9 @@ input:focus{border-color:var(--teal2);box-shadow:0 0 0 3px rgba(42,144,144,.12);
 
   <div id="addBabySection"></div>
 
-  <div style="margin-top:1rem">
+  <div style="margin-top:1rem;display:flex;flex-direction:column;gap:8px">
     <button class="btn btn-outline" onclick="showSaveModal()" style="font-size:13px;padding:10px">📱 Save to phone home screen</button>
+    <button class="btn" style="background:var(--missed-bg);color:var(--missed);border:1px solid var(--missed-border);font-size:12px;padding:8px" onclick="clearAllData()">🗑️ Clear all data and start fresh</button>
   </div>
 </div>
 
@@ -393,7 +394,14 @@ input:focus{border-color:var(--teal2);box-shadow:0 0 0 3px rgba(42,144,144,.12);
       </div>
     </div>
     <div class="field-row">
-      <div class="field"><label>Mother's name <span class="opt">(optional)</span></label><input type="text" id="sMum" placeholder="Your name" maxlength="30"/></div>
+      <div class="field">
+        <label>Mother's name <span class="opt">(optional)</span></label>
+        <div style="position:relative">
+          <input type="text" id="sMum" placeholder="Your name" maxlength="30"/>
+          <button id="mumEditBtn" onclick="unlockMumName()" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--teal);font-size:11px;font-weight:700;cursor:pointer;padding:4px 8px;background:var(--teal-light);border-radius:6px">Edit</button>
+        </div>
+        <p id="mumLockNote" style="display:none;font-size:11px;color:var(--soft);margin-top:4px">Your name is saved across all baby profiles</p>
+      </div>
       <div class="field"><label>Clinic <span class="opt">(optional)</span></label><input type="text" id="sClinic" placeholder="Clinic name" maxlength="40"/></div>
     </div>
     <div class="notebox">💡 All NPI vaccines are <strong>FREE</strong> at government health centres. Girls also receive HPV vaccine at age 9.</div>
@@ -503,6 +511,7 @@ let editingBabyId = null;
 let gender = '';
 
 const DB_NAME = 'MamaShieldProDB', DB_VERSION = 2, BABIES_STORE = 'babies';
+const MUM_NAME_KEY = '__mumName__';
 const MO = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const addD = (d,n) => { const r=new Date(d); r.setDate(r.getDate()+n); return r; };
 const fmt = d => `${d.getDate()} ${MO[d.getMonth()]} ${d.getFullYear()}`;
@@ -727,12 +736,21 @@ async function renderHome() {
 function showSetup(babyId=null) {
   editingBabyId = babyId;
   gender = '';
+  // Reset mum name field state first
+  const mumInp = document.getElementById('sMum');
+  mumInp.readOnly = false;
+  mumInp.style.background = '';
+  mumInp.style.color = '';
+  document.getElementById('mumEditBtn').style.display = 'none';
+  document.getElementById('mumLockNote').style.display = 'none';
   document.getElementById('setupTitle').innerHTML = babyId ? 'Edit baby\'s <em>details</em>' : 'Add your <em>baby\'s details</em>';
   document.getElementById('setupCardTitle').textContent = babyId ? 'Edit baby\'s details' : 'Baby\'s details';
   document.getElementById('saveBabyBtn').textContent = babyId ? 'Update Baby\'s Profile →' : 'Save Baby\'s Profile →';
 
   // Clear fields
   ['sName','sDob','sBlood','sMum','sClinic'].forEach(id=>document.getElementById(id).value='');
+  // Auto-fill mum name if saved (only for new babies, not when editing)
+  if(!babyId) { setTimeout(loadMumName, 100); }
   document.getElementById('btnGirl').className='gender-btn girl';
   document.getElementById('btnBoy').className='gender-btn boy';
 
@@ -785,15 +803,14 @@ async function saveBaby() {
     createdAt: existingBaby ? existingBaby.createdAt : Date.now()
   };
 
+  // Save mum name globally for future baby profiles
+  if(baby.mumName) { await saveMumName(baby.mumName); }
   await saveBabyToDB(baby);
   editingBabyId = null;
   gender = '';
 
-  // Go to home screen first then open baby tracker
-  showScreen('homeScreen');
-  await renderHome();
-  // Small delay then open the tracker
-  setTimeout(async () => { await openBaby(id); }, 300);
+  // Go directly to this baby tracker
+  await openBaby(id);
 }
 
 // ── OPEN BABY TRACKER ──
@@ -818,7 +835,12 @@ async function openBaby(id) {
   document.getElementById('tHeader').className = `t-header ${currentGender||'neutral'}`;
 
   buildCards();
-  showScreen('tracker');
+  // Force show tracker, hide all others
+  document.getElementById('consentScreen').style.display = 'none';
+  document.getElementById('homeScreen').style.display = 'none';
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('tracker').style.display = 'block';
+  window.scrollTo({top:0, behavior:'smooth'});
   setTimeout(buildGCalList, 300);
 }
 
@@ -946,6 +968,57 @@ async function init() {
 }
 
 
+
+async function clearAllData() {
+  if(confirm('This will permanently erase ALL baby profiles and vaccine data. Are you sure?')) {
+    try {
+      if(!DB) DB = await openDB();
+      const tx = DB.transaction(BABIES_STORE, 'readwrite');
+      tx.objectStore(BABIES_STORE).clear();
+      tx.oncomplete = () => {
+        alert('All data cleared. Starting fresh.');
+        location.reload();
+      };
+    } catch(e) {
+      location.reload();
+    }
+  }
+}
+
+
+// ── Mother name locking ──
+async function loadMumName() {
+  try {
+    const saved = await getBaby(MUM_NAME_KEY);
+    if(saved && saved.name) {
+      const inp = document.getElementById('sMum');
+      inp.value = saved.name;
+      inp.style.background = '#F0F0EC';
+      inp.style.color = 'var(--soft)';
+      inp.readOnly = true;
+      document.getElementById('mumEditBtn').style.display = 'block';
+      document.getElementById('mumLockNote').style.display = 'block';
+    }
+  } catch(e) {}
+}
+
+async function saveMumName(name) {
+  if(!name) return;
+  try {
+    await saveBabyToDB({id: MUM_NAME_KEY, name});
+  } catch(e) {}
+}
+
+function unlockMumName() {
+  const inp = document.getElementById('sMum');
+  inp.readOnly = false;
+  inp.style.background = '';
+  inp.style.color = '';
+  inp.focus();
+  document.getElementById('mumEditBtn').style.display = 'none';
+  document.getElementById('mumLockNote').style.display = 'none';
+}
+
 function scrollToBabies() {
   document.getElementById('babiesLabel').scrollIntoView({behavior:'smooth', block:'start'});
 }
@@ -985,30 +1058,71 @@ function buildGCalList() {
   const babyName = document.getElementById('tName').textContent.replace(/👧|👦|👶/g,'').trim();
   const groups = {};
   currentVAX.forEach((v,i) => { if(!groups[v.age]) groups[v.age]=[]; groups[v.age].push(i); });
-  let hasUpcoming = false;
+
+  const upcomingRows = [];
+  const givenRows = [];
+
   Object.entries(groups).forEach(([age,idxs]) => {
     const allGiven = idxs.every(i=>currentGiven[i]);
-    if(allGiven) return;
-    hasUpcoming = true;
     const dueDate = addD(currentDOB, currentVAX[idxs[0]].days);
     const vaccines = idxs.map(i=>currentVAX[i].name).join(', ');
-    const url = makeGCalURL(babyName, age, dueDate, vaccines);
-    const row = document.createElement('div');
-    row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:10px';
-    row.innerHTML = `
-      <div style="flex:1">
-        <div style="font-size:10px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.06em">${age}</div>
-        <div style="font-size:13px;font-weight:600;color:var(--dark)">${fmt(dueDate)}</div>
-      </div>
-      <a href="${url}" target="_blank" 
-        style="background:var(--teal);color:#fff;border:none;border-radius:8px;padding:7px 12px;font-family:DM Sans,sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;text-decoration:none;transition:background .2s"
-        onclick="this.style.background='var(--given)';this.textContent='✅ Added'">
-        + Add to Calendar
-      </a>`;
-    list.appendChild(row);
+
+    if(allGiven) {
+      // Gray out - given vaccines
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 12px;background:#F4F4F2;border:1px solid #E0E0DC;border-radius:10px;opacity:0.6';
+      row.innerHTML = `
+        <div style="flex:1">
+          <div style="font-size:10px;font-weight:700;color:var(--soft);text-transform:uppercase;letter-spacing:.06em">${age}</div>
+          <div style="font-size:13px;font-weight:600;color:var(--soft);text-decoration:line-through">${fmt(dueDate)}</div>
+        </div>
+        <span style="background:var(--given-bg);color:var(--given);border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700">✓ Given</span>`;
+      givenRows.push(row);
+    } else {
+      // Active - upcoming vaccines
+      const url = makeGCalURL(babyName, age, dueDate, vaccines);
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:10px';
+      row.innerHTML = `
+        <div style="flex:1">
+          <div style="font-size:10px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.06em">${age}</div>
+          <div style="font-size:13px;font-weight:600;color:var(--dark)">${fmt(dueDate)}</div>
+        </div>
+        <a href="${url}" target="_blank"
+          style="background:var(--teal);color:#fff;border:none;border-radius:8px;padding:7px 12px;font-family:DM Sans,sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;text-decoration:none;transition:background .2s"
+          onclick="this.style.background='var(--given)';this.textContent='✅ Added'">
+          + Add to Calendar
+        </a>`;
+      upcomingRows.push(row);
+    }
   });
-  if(!hasUpcoming) {
-    list.innerHTML = '<div style="text-align:center;padding:1rem;font-size:13px;color:var(--given);font-weight:600">✅ All vaccines have been given!</div>';
+
+  if(upcomingRows.length === 0 && givenRows.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:1rem;font-size:13px;color:var(--soft)">No vaccines loaded</div>';
+    return;
+  }
+
+  // Show upcoming first
+  if(upcomingRows.length > 0) {
+    const upLabel = document.createElement('p');
+    upLabel.style.cssText = 'font-size:11px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px';
+    upLabel.textContent = 'Upcoming appointments';
+    list.appendChild(upLabel);
+    upcomingRows.forEach(r => list.appendChild(r));
+  } else {
+    list.innerHTML += '<div style="text-align:center;padding:1rem;font-size:13px;color:var(--given);font-weight:600">✅ All vaccines have been given!</div>';
+  }
+
+  // Show given below grayed out
+  if(givenRows.length > 0) {
+    const sep = document.createElement('div');
+    sep.style.cssText = 'height:1px;background:var(--border);margin:12px 0 8px';
+    list.appendChild(sep);
+    const givenLabel = document.createElement('p');
+    givenLabel.style.cssText = 'font-size:11px;font-weight:700;color:var(--soft);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px';
+    givenLabel.textContent = 'Already given';
+    list.appendChild(givenLabel);
+    givenRows.forEach(r => list.appendChild(r));
   }
 }
 
