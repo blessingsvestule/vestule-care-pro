@@ -314,8 +314,36 @@ input:focus{border-color:var(--teal2);box-shadow:0 0 0 3px rgba(42,144,144,.12);
   <div class="home-hero">
     <p class="brand">MamaShield Pro · Blessing's Vestule</p>
     <div style="display:inline-block;background:var(--gold);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:8px;letter-spacing:.05em">✨ FULL BUNDLE</div>
-    <h1 id="homeGreeting">My Babies</h1>
-    <p>Tap a baby to open their vaccine tracker</p>
+    <h1 id="homeGreeting">Welcome, Mama</h1>
+    <p>Your complete MamaShield bundle — all in one place</p>
+  </div>
+
+  <!-- Bundle items - what the mum purchased -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.25rem">
+    <div style="background:#fff;border:1.5px solid var(--given-border);border-radius:14px;padding:1rem;text-align:center;cursor:pointer" onclick="scrollToBabies()">
+      <div style="font-size:1.5rem;margin-bottom:4px">👶</div>
+      <div style="font-size:12px;font-weight:700;color:var(--given)">Baby Trackers</div>
+      <div style="font-size:11px;color:var(--soft);margin-top:2px">Unlimited babies</div>
+    </div>
+    <div style="background:#fff;border:1.5px solid var(--soon-border);border-radius:14px;padding:1rem;text-align:center;cursor:pointer" onclick="scrollToCalendar()">
+      <div style="font-size:1.5rem;margin-bottom:4px">📅</div>
+      <div style="font-size:12px;font-weight:700;color:var(--soon)">Calendar Reminders</div>
+      <div style="font-size:11px;color:var(--soft);margin-top:2px">Sound alerts</div>
+    </div>
+    <div style="background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:1rem;text-align:center;cursor:pointer" onclick="window.open('PDF_TRACKER_LINK_HERE','_blank')">
+      <div style="font-size:1.5rem;margin-bottom:4px">📋</div>
+      <div style="font-size:12px;font-weight:700;color:var(--teal)">PDF Tracker</div>
+      <div style="font-size:11px;color:var(--soft);margin-top:2px">Download & print</div>
+    </div>
+    <div style="background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:1rem;text-align:center;cursor:pointer" onclick="window.open('PDF_GUIDE_LINK_HERE','_blank')">
+      <div style="font-size:1.5rem;margin-bottom:4px">📖</div>
+      <div style="font-size:12px;font-weight:700;color:var(--teal)">Vaccine Guide</div>
+      <div style="font-size:11px;color:var(--soft);margin-top:2px">Missed vaccine guide</div>
+    </div>
+  </div>
+
+  <div style="border-bottom:1px solid var(--border);margin-bottom:1.25rem;padding-bottom:.5rem">
+    <p style="font-size:12px;font-weight:700;color:var(--soft);text-transform:uppercase;letter-spacing:.08em" id="babiesLabel">My Babies</p>
   </div>
 
   <div id="babiesList" class="babies-list"></div>
@@ -474,7 +502,7 @@ let currentGender = '';
 let editingBabyId = null;
 let gender = '';
 
-const DB_NAME = 'MamaShieldDB', DB_VERSION = 2, BABIES_STORE = 'babies';
+const DB_NAME = 'MamaShieldProDB', DB_VERSION = 2, BABIES_STORE = 'babies';
 const MO = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const addD = (d,n) => { const r=new Date(d); r.setDate(r.getDate()+n); return r; };
 const fmt = d => `${d.getDate()} ${MO[d.getMonth()]} ${d.getFullYear()}`;
@@ -540,7 +568,9 @@ async function deleteBabyFromDB(id) {
 
 // ── Helpers ──
 function getState(i) {
-  if(currentGiven[i]) return 'given';
+  // Ensure index is within bounds
+  if(i >= currentGiven.length) return 'future';
+  if(currentGiven[i] === true) return 'given';
   const dl = dL(addD(currentDOB, currentVAX[i].days));
   if(dl < 0) return 'missed';
   if(dl <= 14) return 'soon';
@@ -757,9 +787,13 @@ async function saveBaby() {
 
   await saveBabyToDB(baby);
   editingBabyId = null;
+  gender = '';
 
-  // Go to this baby's tracker
-  await openBaby(id);
+  // Go to home screen first then open baby tracker
+  showScreen('homeScreen');
+  await renderHome();
+  // Small delay then open the tracker
+  setTimeout(async () => { await openBaby(id); }, 300);
 }
 
 // ── OPEN BABY TRACKER ──
@@ -907,6 +941,27 @@ async function init() {
 
   // Show consent screen
   showScreen('consentScreen');
+}
+
+
+function scrollToBabies() {
+  document.getElementById('babiesLabel').scrollIntoView({behavior:'smooth', block:'start'});
+}
+function scrollToCalendar() {
+  // Opens first baby if exists, then scrolls to calendar
+  getAllBabies().then(babies => {
+    const real = babies.filter(b=>b.id!=='__consent__');
+    if(real.length > 0) {
+      openBaby(real[0].id).then(() => {
+        setTimeout(() => {
+          const cal = document.getElementById('gcalList');
+          if(cal) cal.scrollIntoView({behavior:'smooth', block:'start'});
+        }, 500);
+      });
+    } else {
+      alert('Please add a baby first to access calendar reminders.');
+    }
+  });
 }
 
 document.getElementById('sDob').max = new Date().toISOString().split('T')[0];
