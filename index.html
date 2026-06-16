@@ -675,9 +675,11 @@ async function renderHome() {
 
     const card = document.createElement('div');
     card.className = 'baby-card';
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', function() { openBaby(baby.id); });
     card.innerHTML = `
       <div class="baby-avatar ${baby.gender||'neutral'}">${baby.gender==='girl'?'👧':baby.gender==='boy'?'👦':'👶'}</div>
-      <div class="baby-info" onclick="openBaby('${baby.id}')" style="cursor:pointer">
+      <div class="baby-info">
         <div class="baby-name">${baby.babyName}</div>
         <div class="baby-dob">Born ${fmt(dob)}</div>
         <div class="baby-stats">
@@ -686,9 +688,7 @@ async function renderHome() {
           ${soonCount>0?`<span class="baby-stat soon">📅 ${soonCount} due soon</span>`:''}
         </div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
-        <div class="baby-arrow" onclick="openBaby('${baby.id}')" style="cursor:pointer">›</div>
-      </div>`;
+      <div class="baby-arrow">›</div>`;
     list.appendChild(card);
   });
 
@@ -819,6 +819,7 @@ async function openBaby(id) {
 
   buildCards();
   showScreen('tracker');
+  setTimeout(buildGCalList, 300);
 }
 
 // ── BUILD VACCINE CARDS ──
@@ -885,6 +886,7 @@ async function tapGiven(i) {
   }
   updateSummary();
   await saveCurrentState();
+  setTimeout(buildGCalList, 100);
 }
 
 async function saveCurrentState() {
@@ -1010,19 +1012,7 @@ function buildGCalList() {
   }
 }
 
-// Patch openBaby to build gcal list after loading
-const _origOpenBaby = openBaby;
-async function openBaby(id) {
-  await _origOpenBaby(id);
-  setTimeout(buildGCalList, 200);
-}
-
-// Patch tapGiven to refresh gcal list
-const _origTapGiven = tapGiven;
-async function tapGiven(i) {
-  await _origTapGiven(i);
-  setTimeout(buildGCalList, 100);
-}
+// Build gcal after opening baby - integrated directly
 
 init();
 </script>
