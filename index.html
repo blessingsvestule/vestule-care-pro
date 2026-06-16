@@ -12,6 +12,8 @@
 <link rel="manifest" href="./manifest.json"/>
 <link rel="icon" type="image/png" href="./icon.png"/>
 <link rel="apple-touch-icon" href="./icon.png"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -137,6 +139,7 @@ input[readonly]:focus{border-color:var(--border);box-shadow:none;background:#F0F
 .vcard.given{border-color:var(--given-border);background:var(--given-bg)}
 .vcard.missed{border-color:var(--missed-border);background:var(--missed-bg);animation:pulse 2.5s ease infinite}
 .vcard.soon{border-color:var(--soon-border);background:var(--soon-bg)}
+@keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,.1)}50%{box-shadow:0 0 0 5px rgba(192,57,43,.06)}}
 .give-btn{width:44px;height:44px;border-radius:50%;border:2px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer;flex-shrink:0;transition:all .25s;box-shadow:0 2px 8px rgba(0,0,0,.06)}
 .give-btn:hover{border-color:var(--given);background:var(--given-bg);transform:scale(1.06)}
@@ -223,7 +226,7 @@ input[readonly]:focus{border-color:var(--border);box-shadow:none;background:#F0F
       <div class="tile-label" style="color:var(--soon)">Calendar Reminders</div>
       <div class="tile-sub">Select a baby</div>
     </div>
-    <div class="bundle-tile" onclick="showBabySelector('pdf')">
+    <div class="bundle-tile" onclick="showPDFScreen()">
       <div class="tile-icon">📋</div>
       <div class="tile-label">PDF Tracker</div>
       <div class="tile-sub">Personalised download</div>
@@ -432,7 +435,7 @@ let setupGender='',editingId=null,pendingAction='';
 
 // ════ SCREENS ════
 function showScreen(id){
-  ['homeScreen','setupScreen'].forEach(s=>{
+  ['homeScreen','setupScreen','pdfScreen'].forEach(s=>{
     document.getElementById(s).classList.remove('active');
   });
   document.getElementById('trackerScreen').style.display='none';
@@ -838,8 +841,318 @@ async function clearAllData(){
 }
 
 // ════ INIT ════
+
+// ════ PDF SCREEN ════
+let pdfSelectedBaby = null;
+
+async function showPDFScreen(){
+  showScreen('pdfScreen');
+  pdfSelectedBaby = null;
+  document.getElementById('pdfPreview').style.display = 'none';
+  document.getElementById('pdfSuccess').style.display = 'none';
+  document.getElementById('pdfLoading').style.display = 'none';
+
+  const all = await dbGetAll();
+  const babies = getBabies(all);
+  const list = document.getElementById('pdfBabyList');
+  list.innerHTML = '';
+
+  if(babies.length === 0){
+    list.innerHTML = '<p style="font-size:13px;color:var(--soft);text-align:center;padding:1rem">No babies added yet. Add a baby first.</p>';
+    return;
+  }
+
+  babies.forEach(baby => {
+    const dob = new Date(baby.dob+'T00:00:00');
+    const icon = baby.gender==='girl'?'👧':baby.gender==='boy'?'👦':'👶';
+    const displayName = [baby.babyName, baby.otherName, baby.surname].filter(Boolean).join(' ');
+    const btn = document.createElement('button');
+    btn.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--teal-pale);border:1.5px solid var(--border);border-radius:12px;cursor:pointer;width:100%;text-align:left;font-family:DM Sans,sans-serif;transition:all .2s;margin-bottom:8px';
+    btn.innerHTML = `<span style="font-size:1.4rem">${icon}</span><div><div style="font-size:14px;font-weight:600;color:var(--dark)">${displayName}</div><div style="font-size:12px;color:var(--soft);margin-top:2px">Born ${fmt(dob)}</div></div><span style="margin-left:auto;color:var(--teal);font-size:1.3rem" id="pdfCheck${baby.id}"></span>`;
+    btn.addEventListener('click', () => selectPDFBaby(baby, btn));
+    list.appendChild(btn);
+  });
+}
+
+function selectPDFBaby(baby, btn){
+  pdfSelectedBaby = baby;
+  // Highlight selected
+  document.querySelectorAll('#pdfBabyList button').forEach(b => {
+    b.style.borderColor = 'var(--border)';
+    b.style.background = 'var(--teal-pale)';
+  });
+  btn.style.borderColor = 'var(--teal)';
+  btn.style.background = 'var(--teal-light)';
+
+  // Show preview
+  const dob = new Date(baby.dob+'T00:00:00');
+  const vax = [...VAX_BASE,...(baby.gender==='girl'?VAX_GIRL:[])];
+  const given = baby.givenState || [];
+  const givenCount = given.filter(Boolean).length;
+  const fullName = [baby.babyName, baby.otherName, baby.surname].filter(Boolean).join(' ');
+
+  document.getElementById('pdfPreviewBox').innerHTML = `
+    <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px"><span style="color:var(--soft)">Baby's full name</span><span style="font-weight:600;color:var(--dark)">${fullName}</span></div>
+    <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px"><span style="color:var(--soft)">Date of birth</span><span style="font-weight:600;color:var(--dark)">${fmt(dob)}</span></div>
+    <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px"><span style="color:var(--soft)">Sex</span><span style="font-weight:600;color:var(--dark)">${baby.gender==='girl'?'Female 👧':baby.gender==='boy'?'Male 👦':''}</span></div>
+    <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px"><span style="color:var(--soft)">Blood group</span><span style="font-weight:600;color:var(--dark)">${baby.blood||'Not specified'}</span></div>
+    <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px"><span style="color:var(--soft)">Mother</span><span style="font-weight:600;color:var(--dark)">${baby.mumName||'Not specified'}</span></div>
+    <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px"><span style="color:var(--soft)">Vaccines given</span><span style="font-weight:600;color:var(--given)">${givenCount} of ${vax.length} ✓</span></div>`;
+
+  document.getElementById('pdfSuccess').style.display = 'none';
+  document.getElementById('pdfLoading').style.display = 'none';
+  document.getElementById('pdfGenerateBtn').style.display = 'block';
+  document.getElementById('pdfGenerateBtn').textContent = "📄 Generate My Baby's PDF Tracker";
+  document.getElementById('pdfGenerateBtn').disabled = false;
+  document.getElementById('pdfPreview').style.display = 'block';
+  document.getElementById('pdfPreview').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function resetPDFSelector(){
+  pdfSelectedBaby = null;
+  document.getElementById('pdfPreview').style.display = 'none';
+  document.querySelectorAll('#pdfBabyList button').forEach(b => {
+    b.style.borderColor = 'var(--border)';
+    b.style.background = 'var(--teal-pale)';
+  });
+}
+
+async function generatePDF(){
+  if(!pdfSelectedBaby) return;
+  const baby = pdfSelectedBaby;
+
+  document.getElementById('pdfLoading').style.display = 'block';
+  document.getElementById('pdfGenerateBtn').style.display = 'none';
+  document.getElementById('pdfSuccess').style.display = 'none';
+  await new Promise(r=>setTimeout(r,100));
+
+  try{
+    const dob = new Date(baby.dob+'T00:00:00');
+    const vax = [...VAX_BASE,...(baby.gender==='girl'?VAX_GIRL:[])];
+    const given = baby.givenState || new Array(vax.length).fill(false);
+    const fullName = [baby.babyName, baby.otherName, baby.surname].filter(Boolean).join(' ');
+
+    const MO_LONG=["January","February","March","April","May","June","July","August","September","October","November","December"];
+    const MO_S=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const fmtS=d=>`${d.getDate()} ${MO_S[d.getMonth()]} ${d.getFullYear()}`;
+    const fmtL=d=>`${d.getDate()} ${MO_LONG[d.getMonth()]} ${d.getFullYear()}`;
+    const addDays=(d,n)=>{const r=new Date(d);r.setDate(r.getDate()+n);return r;};
+
+    const {jsPDF}=window.jspdf;
+    const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const W=210;
+    const TEAL=[26,107,107],GOLD=[196,133,58],DARK=[28,43,43],MID=[74,94,94];
+    const SOFT=[138,171,171],GIVEN=[30,122,80],WHITE=[255,255,255],LIGHT=[240,250,250],BORDER=[208,232,232];
+
+    // PAGE 1 — Cover & Profile
+    doc.setFillColor(...TEAL);doc.rect(0,0,W,45,'F');
+    doc.setTextColor(...WHITE);doc.setFontSize(22);doc.setFont('helvetica','bold');
+    doc.text('MamaShield',15,18);
+    doc.setFontSize(11);doc.setFont('helvetica','normal');
+    doc.text('Baby Vaccine Tracker',15,26);
+    doc.setFontSize(9);doc.text("Blessing's Vestule  ·  blessingsvestule@gmail.com",15,34);
+    doc.setFontSize(8);doc.text('Based on Nigerian NPI Schedule 2025-2026 (NPHCDA)',15,40);
+
+    doc.setFillColor(...GOLD);doc.rect(0,45,W,20,'F');
+    doc.setTextColor(...WHITE);doc.setFontSize(16);doc.setFont('helvetica','bold');
+    doc.text(`${fullName} — Vaccine Tracker`,15,57);
+    doc.setFontSize(9);doc.setFont('helvetica','normal');
+    doc.text(`Generated ${fmtL(new Date())}`,15,63);
+
+    doc.setTextColor(...TEAL);doc.setFontSize(12);doc.setFont('helvetica','bold');
+    doc.text('BABY PROFILE',15,78);
+    doc.setDrawColor(...TEAL);doc.setLineWidth(0.5);doc.line(15,80,195,80);
+
+    const profileData=[
+      ["Baby's Full Name",fullName],
+      ["Date of Birth",fmtL(dob)],
+      ["Sex",baby.gender==='girl'?'Female':baby.gender==='boy'?'Male':''],
+      ["Blood Group",baby.blood||''],
+      ["Mother's Name",baby.mumName||''],
+      ["Health Facility",baby.clinic||''],
+      ["Paediatrician",''],
+      ["Emergency Contact",''],
+    ];
+
+    let y=85;
+    profileData.forEach(([label,value],i)=>{
+      doc.setFillColor(...(i%2===0?LIGHT:WHITE));doc.rect(15,y-4,180,8,'F');
+      doc.setTextColor(...MID);doc.setFontSize(8);doc.setFont('helvetica','bold');doc.text(label,17,y);
+      doc.setFont('helvetica','normal');doc.setTextColor(...DARK);doc.text(value||'',80,y);
+      y+=8;
+    });
+
+    y+=5;
+    doc.setFillColor(255,248,240);doc.setDrawColor(...GOLD);doc.setLineWidth(0.3);doc.rect(15,y,180,20,'FD');
+    doc.setTextColor(...GOLD);doc.setFontSize(8);doc.setFont('helvetica','bold');doc.text('MEDICAL DISCLAIMER',18,y+6);
+    doc.setFont('helvetica','normal');doc.setTextColor(...MID);
+    doc.text('MamaShield is a scheduling tool only — not a medical service. Sourced from NPHCDA NPI 2025-2026 schedule.',18,y+11);
+    doc.text('Always consult a qualified healthcare professional for all medical decisions.',18,y+16);
+
+    // PAGE 2 — Vaccine Log
+    doc.addPage();
+    doc.setFillColor(...TEAL);doc.rect(0,0,W,18,'F');
+    doc.setTextColor(...WHITE);doc.setFontSize(14);doc.setFont('helvetica','bold');
+    doc.text(`${fullName} — Vaccine Log`,15,12);
+
+    y=25;
+    doc.setFillColor(...TEAL);doc.rect(15,y,180,8,'F');
+    doc.setTextColor(...WHITE);doc.setFontSize(7);doc.setFont('helvetica','bold');
+    doc.text('AGE',17,y+5);doc.text('VACCINE',42,y+5);doc.text('DUE DATE',110,y+5);
+    doc.text('STATUS',140,y+5);doc.text('CLINIC',162,y+5);
+    y+=8;
+
+    let lastAge='';
+    vax.forEach((v,i)=>{
+      if(y>270){doc.addPage();y=20;}
+      const due=addDays(dob,v.days);
+      const isGiven=given[i]===true;
+      const hosp=(baby.hospitalState&&baby.hospitalState[i])||'';
+      const bg=i%2===0?LIGHT:WHITE;
+      doc.setFillColor(...bg);doc.rect(15,y,180,8,'F');
+      if(v.age!==lastAge){
+        doc.setFillColor(...GOLD);doc.rect(15,y,25,8,'F');
+        doc.setTextColor(...WHITE);doc.setFontSize(6.5);doc.setFont('helvetica','bold');
+        doc.text(v.age,17,y+5);
+        lastAge=v.age;
+      }
+      doc.setTextColor(...DARK);doc.setFontSize(7);doc.setFont('helvetica','normal');
+      doc.text(v.name,42,y+5,{maxWidth:65});
+      doc.setTextColor(...MID);doc.text(fmtS(due),110,y+5);
+      if(isGiven){doc.setTextColor(...GIVEN);doc.setFont('helvetica','bold');doc.text('GIVEN',140,y+5);}
+      else{doc.setTextColor(...SOFT);doc.setFont('helvetica','normal');doc.text('[ ]',143,y+5);}
+      doc.setTextColor(...MID);doc.setFont('helvetica','normal');doc.text(hosp,162,y+5,{maxWidth:30});
+      y+=8;
+    });
+
+    // PAGE 3 — Appointment Planner
+    doc.addPage();
+    doc.setFillColor(...TEAL);doc.rect(0,0,W,18,'F');
+    doc.setTextColor(...WHITE);doc.setFontSize(14);doc.setFont('helvetica','bold');
+    doc.text(`${fullName} — Appointment Planner`,15,12);
+
+    y=28;
+    doc.setTextColor(...TEAL);doc.setFontSize(9);doc.setFont('helvetica','normal');
+    doc.text(`All dates calculated from date of birth: ${fmtL(dob)}`,15,y);y+=10;
+
+    doc.setFillColor(...TEAL);doc.rect(15,y,180,8,'F');
+    doc.setTextColor(...WHITE);doc.setFontSize(7);doc.setFont('helvetica','bold');
+    doc.text('VISIT',17,y+5);doc.text('VACCINES DUE',42,y+5);
+    doc.text('DATE',115,y+5);doc.text('DONE?',162,y+5);y+=8;
+
+    const groups={};
+    vax.forEach((v,i)=>{if(!groups[v.age])groups[v.age]={days:v.days,vaccines:[],given:[]};groups[v.age].vaccines.push(v.name);groups[v.age].given.push(given[i]===true);});
+
+    Object.entries(groups).forEach(([age,data],i)=>{
+      if(y>270){doc.addPage();y=20;}
+      const due=addDays(dob,data.days);
+      const allDone=data.given.every(Boolean);
+      doc.setFillColor(...(i%2===0?LIGHT:WHITE));doc.rect(15,y,180,10,'F');
+      doc.setTextColor(...DARK);doc.setFontSize(7);doc.setFont('helvetica','bold');doc.text(age,17,y+4);
+      doc.setFont('helvetica','normal');doc.setFontSize(6.5);
+      doc.text(data.vaccines.join(', '),42,y+4,{maxWidth:70});
+      doc.setFontSize(7);doc.setTextColor(...TEAL);doc.setFont('helvetica','bold');doc.text(fmtS(due),115,y+6);
+      if(allDone){doc.setTextColor(...GIVEN);doc.text('DONE',162,y+6);}
+      else{doc.setTextColor(...MID);doc.setFont('helvetica','normal');doc.text('[ ]',165,y+6);}
+      y+=10;
+    });
+
+    y+=8;if(y>240){doc.addPage();y=20;}
+    doc.setFillColor(232,245,245);doc.rect(15,y,180,18,'F');
+    doc.setTextColor(...TEAL);doc.setFontSize(8);doc.setFont('helvetica','bold');
+    doc.text('REMINDER TIP FOR WORKING MUMS',18,y+7);
+    doc.setFont('helvetica','normal');doc.setTextColor(...MID);doc.setFontSize(7);
+    doc.text('Set THREE phone alarms: 1 week before, 2 days before, and the morning of the appointment.',18,y+12);
+    doc.text('Use MamaShield Pro to add Google Calendar reminders automatically.',18,y+17);
+
+    // PAGE 4 — Reactions Log & Notes
+    doc.addPage();
+    doc.setFillColor(...TEAL);doc.rect(0,0,W,18,'F');
+    doc.setTextColor(...WHITE);doc.setFontSize(14);doc.setFont('helvetica','bold');
+    doc.text('Vaccine Reactions Log & Notes',15,12);
+
+    y=28;
+    doc.setTextColor(...TEAL);doc.setFontSize(10);doc.setFont('helvetica','bold');
+    doc.text('VACCINE REACTIONS LOG',15,y);
+    doc.setDrawColor(...TEAL);doc.line(15,y+2,195,y+2);y+=8;
+    doc.setTextColor(...MID);doc.setFontSize(7);doc.setFont('helvetica','normal');
+    doc.text('Record any reactions here to share with your doctor.',15,y);y+=8;
+
+    doc.setFillColor(...TEAL);doc.rect(15,y,180,7,'F');
+    doc.setTextColor(...WHITE);doc.setFontSize(7);doc.setFont('helvetica','bold');
+    doc.text('DATE',17,y+5);doc.text('VACCINE',45,y+5);doc.text('REACTION',90,y+5);doc.text('ACTION',145,y+5);y+=7;
+    for(let r=0;r<6;r++){
+      doc.setFillColor(...(r%2===0?LIGHT:WHITE));doc.rect(15,y,180,9,'F');
+      doc.setDrawColor(...BORDER);doc.setLineWidth(0.2);doc.rect(15,y,180,9,'S');y+=9;
+    }
+
+    y+=8;
+    doc.setTextColor(...TEAL);doc.setFontSize(10);doc.setFont('helvetica','bold');
+    doc.text('MY NOTES & QUESTIONS FOR THE DOCTOR',15,y);
+    doc.setDrawColor(...TEAL);doc.line(15,y+2,195,y+2);y+=10;
+    for(let n=0;n<8;n++){doc.setDrawColor(...BORDER);doc.setLineWidth(0.3);doc.line(15,y,195,y);y+=9;}
+
+    y+=8;
+    doc.setFillColor(232,245,245);doc.rect(15,y,180,14,'F');
+    doc.setTextColor(...TEAL);doc.setFontSize(7);doc.setFont('helvetica','bold');
+    doc.text('ALL ROUTINE NPI VACCINES ARE FREE AT GOVERNMENT HEALTH CENTRES ACROSS NIGERIA',W/2,y+6,{align:'center'});
+    doc.setFont('helvetica','normal');doc.setTextColor(...MID);
+    doc.text(`Keep this document with ${baby.babyName}'s vaccination card  ·  MamaShield Pro · Blessing's Vestule`,W/2,y+11,{align:'center'});
+
+    const filename=`${fullName.replace(/\s+/g,'_')}_MamaShield_Tracker.pdf`;
+    doc.save(filename);
+
+    document.getElementById('pdfLoading').style.display='none';
+    document.getElementById('pdfSuccess').style.display='block';
+    document.getElementById('pdfSuccessMsg').textContent=`${fullName}'s tracker downloaded. Open the file to print.`;
+    document.getElementById('pdfGenerateBtn').style.display='block';
+    document.getElementById('pdfGenerateBtn').textContent='📄 Download Again';
+    document.getElementById('pdfGenerateBtn').disabled=false;
+
+  }catch(err){
+    console.error('PDF error:',err);
+    document.getElementById('pdfLoading').style.display='none';
+    document.getElementById('pdfGenerateBtn').style.display='block';
+    document.getElementById('pdfGenerateBtn').disabled=false;
+    alert('Could not generate PDF. Please try again. Error: '+err.message);
+  }
+}
+
 document.getElementById('sDob').max=new Date().toISOString().split('T')[0];
 openDB().then(()=>goHome());
 </script>
+
+<!-- ══ PDF SCREEN ══ -->
+<div id="pdfScreen" class="screen">
+  <div class="hero">
+    <p class="brand">MamaShield Pro · Blessing's Vestule</p>
+    <h1>Your Baby's <em>Personalised PDF</em></h1>
+    <p>Select your baby and generate a beautifully formatted 4-page vaccine tracker — ready to print and keep in the hospital bag.</p>
+  </div>
+  <div class="card">
+    <p class="card-title" id="pdfCardTitle">Select your baby</p>
+    <p class="card-sub">Choose which baby you want to generate a PDF tracker for.</p>
+    <div id="pdfBabyList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:1rem"></div>
+
+    <!-- Preview section -->
+    <div id="pdfPreview" style="display:none">
+      <div style="background:var(--teal-pale);border:1.5px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:1rem" id="pdfPreviewBox"></div>
+      <div class="notebox">📄 Your PDF will include: baby profile, complete vaccine log with calculated dates, appointment planner, and notes pages. Print at home or at any business centre.</div>
+      <div id="pdfSuccess" style="display:none;background:var(--given-bg);border:1px solid var(--given-border);border-radius:12px;padding:1rem;text-align:center;margin-bottom:1rem">
+        <div style="font-size:2rem;margin-bottom:6px">✅</div>
+        <div style="font-size:14px;font-weight:600;color:var(--given)">Your PDF is ready!</div>
+        <div style="font-size:12px;color:var(--mid);margin-top:4px" id="pdfSuccessMsg"></div>
+      </div>
+      <div id="pdfLoading" style="display:none;text-align:center;padding:1.5rem">
+        <div style="width:36px;height:36px;border:4px solid var(--teal-light);border-top-color:var(--teal);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 1rem"></div>
+        <p style="font-size:14px;color:var(--mid);font-weight:600">Generating your personalised PDF...</p>
+        <p style="font-size:12px;color:var(--soft);margin-top:6px">This takes about 5 seconds</p>
+      </div>
+      <button class="btn btn-teal" id="pdfGenerateBtn" onclick="generatePDF()">📄 Generate My Baby's PDF Tracker</button>
+      <button class="btn btn-outline btn-sm" onclick="resetPDFSelector()">← Choose different baby</button>
+    </div>
+    <button class="btn btn-outline" onclick="goHome()" style="margin-top:8px">← Back to home</button>
+  </div>
+</div>
 </body>
 </html>
