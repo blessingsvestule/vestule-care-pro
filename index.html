@@ -228,7 +228,7 @@ input[readonly]:focus{border-color:var(--border);box-shadow:none;background:#F0F
       <div class="tile-label">PDF Tracker</div>
       <div class="tile-sub">Personalised download</div>
     </div>
-    <div class="bundle-tile" onclick="window.open('https://blessingsvestule.github.io/mamashield-pro/vaccine_guide.html','_blank')">
+    <div class="bundle-tile" onclick="window.open('VACCINE_GUIDE_LINK','_blank')">
       <div class="tile-icon">📖</div>
       <div class="tile-label">Vaccine Guide</div>
       <div class="tile-sub">NPHCDA sourced</div>
@@ -253,9 +253,19 @@ input[readonly]:focus{border-color:var(--border);box-shadow:none;background:#F0F
   <div class="card">
     <p class="card-title" id="setupCardTitle">Baby's details</p>
     <p class="card-sub">Every vaccine date calculates automatically from the date of birth.</p>
+    <div class="field-row">
+      <div class="field">
+        <label>First name</label>
+        <input type="text" id="sName" placeholder="e.g. Adaeze" maxlength="30"/>
+      </div>
+      <div class="field">
+        <label>Surname</label>
+        <input type="text" id="sSurname" placeholder="e.g. Okonkwo" maxlength="30"/>
+      </div>
+    </div>
     <div class="field">
-      <label>Baby's name</label>
-      <input type="text" id="sName" placeholder="e.g. Adaeze, Emeka, Fatima…" maxlength="30"/>
+      <label>Other name <span class="opt">(optional)</span></label>
+      <input type="text" id="sOtherName" placeholder="e.g. Chidinma" maxlength="30"/>
     </div>
     <div class="field-row">
       <div class="field">
@@ -529,7 +539,7 @@ function closeBabySelector(){document.getElementById('babySelectorModal').classL
 async function showSetup(babyId=null){
   editingId=babyId;
   setupGender='';
-  ['sName','sDob','sClinic'].forEach(id=>document.getElementById(id).value='');
+  ['sName','sSurname','sOtherName','sDob','sClinic'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('sBlood').value='';
   document.getElementById('sMum').value='';
   document.getElementById('sMum').readOnly=false;
@@ -546,6 +556,8 @@ async function showSetup(babyId=null){
     const baby=await dbGet(babyId);
     if(baby){
       document.getElementById('sName').value=baby.babyName||'';
+      document.getElementById('sSurname').value=baby.surname||'';
+      document.getElementById('sOtherName').value=baby.otherName||'';
       document.getElementById('sDob').value=baby.dob||'';
       document.getElementById('sBlood').value=baby.blood||'';
       document.getElementById('sMum').value=baby.mumName||'';
@@ -595,6 +607,7 @@ async function saveBaby(){
   if(!setupGender){alert("Please select the sex of your baby.");return;}
   const id=editingId||uid();
   const mumName=document.getElementById('sMum').value.trim();
+  const surname=document.getElementById('sSurname').value.trim();
   if(mumName) await dbPut({id:'__mum__',name:mumName});
   const vax=[...VAX_BASE,...(setupGender==='girl'?VAX_GIRL:[])];
   let givenState=new Array(vax.length).fill(false);
@@ -603,7 +616,8 @@ async function saveBaby(){
     const ex=await dbGet(editingId);
     if(ex){givenState=ex.givenState||givenState;hospState=ex.hospitalState||hospState;}
   }
-  const baby={id,babyName:name,dob,gender:setupGender,blood:document.getElementById('sBlood').value,mumName,clinic:document.getElementById('sClinic').value.trim(),givenState,hospitalState:hospState,createdAt:Date.now()};
+  const otherName=document.getElementById('sOtherName').value.trim();
+  const baby={id,babyName:name,surname,otherName,dob,gender:setupGender,blood:document.getElementById('sBlood').value,mumName,clinic:document.getElementById('sClinic').value.trim(),givenState,hospitalState:hospState,createdAt:Date.now()};
   await dbPut(baby);
   editingId=null;setupGender='';
   await openBaby(id);
