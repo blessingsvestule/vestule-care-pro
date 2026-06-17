@@ -1,6 +1,6 @@
 {
-  "name": "MamaShield Baby Tracker",
-  "short_name": "MamaShield",
+  "name": "Vestule Care Baby Tracker",
+  "short_name": "Vestule Care",
   "description": "Free Nigerian baby vaccine tracker for working mums",
   "start_url": "./index.html",
   "display": "standalone",
