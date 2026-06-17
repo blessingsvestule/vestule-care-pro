@@ -52,7 +52,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--dark);
 
 /* ── COMMON ── */
 .hero{background:linear-gradient(135deg,#1A6B6B,#0D4040);border-radius:20px;padding:1.75rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
-.hero::after{content:'🛡️';position:absolute;right:-10px;bottom:-18px;font-size:6rem;opacity:.08;pointer-events:none}
+.hero::after{content:'';position:absolute;right:-10px;bottom:-18px;width:140px;height:160px;background-image:url('./watermark.png');background-size:contain;background-repeat:no-repeat;background-position:bottom right;opacity:.12;pointer-events:none}
 .brand{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:6px}
 .hero h1{font-family:'DM Serif Display',serif;font-size:1.5rem;color:#fff;line-height:1.25;margin-bottom:6px}
 .hero h1 em{font-style:italic;color:#A8D8D8}
@@ -209,7 +209,7 @@ input[readonly]:focus{border-color:var(--border);box-shadow:none;background:#F0F
 <!-- ══ HOME SCREEN ══ -->
 <div id="homeScreen" class="screen active">
   <div class="hero">
-    <p class="brand">Vestule Care Pro · Blessing's Vestule</p>
+    <p class="brand">Vestule Care Pro by Blessing's Vestule</p>
     <div class="badge">✨ FULL BUNDLE</div>
     <h1 id="homeTitle">My Babies</h1>
     <p>Your complete Vestule Care bundle — all in one place</p>
@@ -231,7 +231,7 @@ input[readonly]:focus{border-color:var(--border);box-shadow:none;background:#F0F
       <div class="tile-label">PDF Tracker</div>
       <div class="tile-sub">Personalised download</div>
     </div>
-    <div class="bundle-tile" onclick="window.open('https://blessingsvestule.github.io/mamashield-pro/vaccine_guide.html','_blank')">
+    <div class="bundle-tile" onclick="window.open('https://blessingsvestule.github.io/vestule-care-pro/vaccine_guide.html','_blank')">
       <div class="tile-icon">📖</div>
       <div class="tile-label">Vaccine Guide</div>
       <div class="tile-sub">NPHCDA sourced</div>
@@ -249,7 +249,7 @@ input[readonly]:focus{border-color:var(--border);box-shadow:none;background:#F0F
 <!-- ══ SETUP SCREEN ══ -->
 <div id="setupScreen" class="screen">
   <div class="hero">
-    <p class="brand">Vestule Care Pro · Blessing's Vestule</p>
+    <p class="brand">Vestule Care Pro by Blessing's Vestule</p>
     <h1 id="setupTitle">Add your <em>baby's details</em></h1>
     <p>Fill in once — saved permanently on your phone</p>
   </div>
@@ -359,7 +359,7 @@ input[readonly]:focus{border-color:var(--border);box-shadow:none;background:#F0F
   </div>
 
   <div class="disclaimer">⚕️ Vestule Care is a scheduling tool only — not a medical service. Always confirm vaccine dates with your paediatrician or nearest government health centre. Based on Nigerian NPI 2025–2026 schedule (NPHCDA).</div>
-  <div class="t-footer">Vestule Care Pro · Blessing's Vestule 🛡️</div>
+  <div class="t-footer">Vestule Care Pro by Blessing's Vestule 🛡️</div>
   <div style="max-width:560px;margin:0 auto;padding:0 1rem 2rem;display:flex;flex-direction:column;gap:8px">
     <button class="btn btn-outline btn-sm" onclick="showSetup(currentId)">✏️ Edit baby's details</button>
     <button class="btn btn-danger btn-sm" onclick="deleteCurrentBaby()">🗑️ Remove this baby</button>
@@ -759,7 +759,7 @@ async function saveState(){
 function makeGCalURL(babyName,age,due,vaccines){
   const start=fmtG(due),end=fmtG(addD(due,1));
   // Pre-configure a 7-day reminder in the URL
-  const details=`Vaccines: ${vaccines}\n\nBring:\n• Baby's vaccination card\n• Change of clothes for baby\n\nAll NPI vaccines are FREE at government health centres in Nigeria.\n\nVestule Care Pro · Blessing's Vestule`;
+  const details=`Vaccines: ${vaccines}\n\nBring:\n• Baby's vaccination card\n• Change of clothes for baby\n\nAll NPI vaccines are FREE at government health centres in Nigeria.\n\nVestule Care Pro by Blessing's Vestule`;
   const p=new URLSearchParams({
     action:'TEMPLATE',
     text:`💉 ${babyName} — ${age} Vaccines`,
@@ -1125,7 +1125,7 @@ openDB().then(()=>goHome());
 <!-- ══ PDF SCREEN ══ -->
 <div id="pdfScreen" class="screen">
   <div class="hero">
-    <p class="brand">Vestule Care Pro · Blessing's Vestule</p>
+    <p class="brand">Vestule Care Pro by Blessing's Vestule</p>
     <h1>Your Baby's <em>Personalised PDF</em></h1>
     <p>Select your baby and generate a beautifully formatted 4-page vaccine tracker — ready to print and keep in the hospital bag.</p>
   </div>
