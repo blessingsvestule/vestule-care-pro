@@ -453,7 +453,7 @@ async function goHome(){
   await renderHome();
 }
 
-function getBabies(all){return all.filter(b=>b.id!=='__mum__'&&b.id!=='__consent__');}
+function getBabies(all){return all.filter(b=>b.id!=='__mum__'&&b.id!=='__consent__'&&b.id!=='__unlocked__');}
 
 async function renderHome(){
   const all=await dbGetAll();
