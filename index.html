@@ -632,17 +632,30 @@ async function showSetup(babyId=null){
     document.getElementById('setupTitle').innerHTML="Add your <em>baby's details</em>";
     document.getElementById('setupCardTitle').textContent="Baby's details";
     document.getElementById('saveBabyBtn').textContent="Save Baby's Profile →";
-    // Auto-fill mum name
+    // Auto-fill mum name from __mum__ record or first saved baby
     try{
+      let mumName='';
       const m=await dbGet('__mum__');
       if(m&&m.name){
+        mumName=m.name;
+      } else {
+        // Fallback: read from first saved baby
+        const all=await dbGetAll();
+        const babies=getBabies(all);
+        if(babies.length>0&&babies[0].mumName){
+          mumName=babies[0].mumName;
+        }
+      }
+      if(mumName){
         const inp=document.getElementById('sMum');
-        inp.value=m.name;
+        inp.value=mumName;
         inp.readOnly=true;
         inp.style.background='#F0F0EC';
         inp.style.color='var(--soft)';
         document.getElementById('mumEditBtn').style.display='block';
         document.getElementById('mumNote').style.display='block';
+        // Also ensure __mum__ is saved for future use
+        await dbPut({id:'__mum__',name:mumName});
       }
     }catch(e){}
   }
@@ -1160,7 +1173,7 @@ async function generatePDF(){
 
     document.getElementById('pdfLoading').style.display='none';
     document.getElementById('pdfSuccess').style.display='block';
-    document.getElementById('pdfSuccessMsg').textContent=`${fullName}'s tracker downloaded. Open the file to print.`;
+    document.getElementById('pdfSuccessMsg').innerHTML=`✅ <strong>${fullName}'s tracker has been downloaded.</strong><br>Find it in your phone's <strong>Downloads folder</strong> or Files app. If your phone asks "Download again?" — tap Yes to get the latest version.`;
     document.getElementById('pdfGenerateBtn').style.display='block';
     document.getElementById('pdfGenerateBtn').textContent='📄 Download Again';
     document.getElementById('pdfGenerateBtn').disabled=false;
